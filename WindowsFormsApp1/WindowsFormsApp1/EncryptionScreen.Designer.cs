@@ -28,63 +28,54 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.label1 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.Image1 = new System.Windows.Forms.PictureBox();
+            this.EncryptButton = new System.Windows.Forms.Button();
+            this.loadButton = new System.Windows.Forms.Button();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.label2 = new System.Windows.Forms.Label();
             this.backButton = new System.Windows.Forms.Button();
             this.saveButton = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.VisualisationCheckBox = new System.Windows.Forms.CheckBox();
+            this.percentageLabel = new System.Windows.Forms.Label();
+            this.GenerationButton = new System.Windows.Forms.Button();
+            this.Key1label = new System.Windows.Forms.Label();
+            this.Key2Label = new System.Windows.Forms.Label();
+            this.LoadPathTextBox = new System.Windows.Forms.TextBox();
+            this.Image1 = new System.Windows.Forms.PictureBox();
+            this.FirstKeyTextBox = new System.Windows.Forms.TextBox();
+            this.SecondKeyTextBox = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.timeLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.Image1)).BeginInit();
             this.SuspendLayout();
             // 
-            // label1
+            // EncryptButton
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(95, 50);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(35, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "label1";
+            this.EncryptButton.Location = new System.Drawing.Point(2, 480);
+            this.EncryptButton.MinimumSize = new System.Drawing.Size(150, 50);
+            this.EncryptButton.Name = "EncryptButton";
+            this.EncryptButton.Size = new System.Drawing.Size(150, 50);
+            this.EncryptButton.TabIndex = 1;
+            this.EncryptButton.Text = "Encrypt";
+            this.EncryptButton.UseVisualStyleBackColor = true;
+            this.EncryptButton.Click += new System.EventHandler(this.button1_Click);
             // 
-            // button1
+            // loadButton
             // 
-            this.button1.Location = new System.Drawing.Point(46, 141);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(135, 52);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "Encrypt";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(372, 530);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(147, 60);
-            this.button2.TabIndex = 2;
-            this.button2.Text = "Load Image ";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // Image1
-            // 
-            this.Image1.BackColor = System.Drawing.SystemColors.ActiveBorder;
-            this.Image1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.Image1.Location = new System.Drawing.Point(285, 12);
-            this.Image1.Name = "Image1";
-            this.Image1.Size = new System.Drawing.Size(512, 512);
-            this.Image1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.Image1.TabIndex = 3;
-            this.Image1.TabStop = false;
+            this.loadButton.Location = new System.Drawing.Point(123, 99);
+            this.loadButton.Name = "loadButton";
+            this.loadButton.Size = new System.Drawing.Size(135, 40);
+            this.loadButton.TabIndex = 2;
+            this.loadButton.Text = "Load Image ";
+            this.loadButton.UseVisualStyleBackColor = true;
+            this.loadButton.Click += new System.EventHandler(this.button2_Click);
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(29, 247);
+            this.progressBar1.Location = new System.Drawing.Point(378, 534);
             this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(233, 35);
+            this.progressBar1.Size = new System.Drawing.Size(512, 52);
             this.progressBar1.TabIndex = 4;
             // 
             // label2
@@ -99,9 +90,10 @@
             // 
             // backButton
             // 
-            this.backButton.Location = new System.Drawing.Point(187, 78);
+            this.backButton.Location = new System.Drawing.Point(2, 536);
+            this.backButton.MinimumSize = new System.Drawing.Size(150, 50);
             this.backButton.Name = "backButton";
-            this.backButton.Size = new System.Drawing.Size(75, 23);
+            this.backButton.Size = new System.Drawing.Size(150, 50);
             this.backButton.TabIndex = 6;
             this.backButton.Text = "Back";
             this.backButton.UseVisualStyleBackColor = true;
@@ -109,29 +101,172 @@
             // 
             // saveButton
             // 
-            this.saveButton.Location = new System.Drawing.Point(600, 531);
+            this.saveButton.Location = new System.Drawing.Point(153, 536);
+            this.saveButton.MinimumSize = new System.Drawing.Size(150, 50);
             this.saveButton.Name = "saveButton";
-            this.saveButton.Size = new System.Drawing.Size(164, 58);
+            this.saveButton.Size = new System.Drawing.Size(150, 50);
             this.saveButton.TabIndex = 7;
             this.saveButton.Text = "Save Image";
             this.saveButton.UseVisualStyleBackColor = true;
             this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Times New Roman", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Location = new System.Drawing.Point(117, 28);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(145, 31);
+            this.label3.TabIndex = 8;
+            this.label3.Text = "Encryption";
+            // 
+            // VisualisationCheckBox
+            // 
+            this.VisualisationCheckBox.AutoSize = true;
+            this.VisualisationCheckBox.Font = new System.Drawing.Font("Times New Roman", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.VisualisationCheckBox.Location = new System.Drawing.Point(2, 377);
+            this.VisualisationCheckBox.Name = "VisualisationCheckBox";
+            this.VisualisationCheckBox.Size = new System.Drawing.Size(122, 25);
+            this.VisualisationCheckBox.TabIndex = 9;
+            this.VisualisationCheckBox.Text = "Visualisation";
+            this.VisualisationCheckBox.UseVisualStyleBackColor = true;
+            this.VisualisationCheckBox.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
+            // percentageLabel
+            // 
+            this.percentageLabel.AutoSize = true;
+            this.percentageLabel.Font = new System.Drawing.Font("Times New Roman", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.percentageLabel.Location = new System.Drawing.Point(319, 536);
+            this.percentageLabel.MinimumSize = new System.Drawing.Size(50, 50);
+            this.percentageLabel.Name = "percentageLabel";
+            this.percentageLabel.Size = new System.Drawing.Size(50, 50);
+            this.percentageLabel.TabIndex = 11;
+            this.percentageLabel.Text = "0%";
+            this.percentageLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // GenerationButton
+            // 
+            this.GenerationButton.Location = new System.Drawing.Point(123, 218);
+            this.GenerationButton.Name = "GenerationButton";
+            this.GenerationButton.Size = new System.Drawing.Size(135, 40);
+            this.GenerationButton.TabIndex = 12;
+            this.GenerationButton.Text = "Generate Keys";
+            this.GenerationButton.UseVisualStyleBackColor = true;
+            this.GenerationButton.Click += new System.EventHandler(this.GenerationButton_Click);
+            // 
+            // Key1label
+            // 
+            this.Key1label.AutoSize = true;
+            this.Key1label.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Key1label.Location = new System.Drawing.Point(-2, 284);
+            this.Key1label.MinimumSize = new System.Drawing.Size(55, 30);
+            this.Key1label.Name = "Key1label";
+            this.Key1label.Size = new System.Drawing.Size(55, 30);
+            this.Key1label.TabIndex = 15;
+            this.Key1label.Text = "Key1 :";
+            this.Key1label.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // Key2Label
+            // 
+            this.Key2Label.AutoSize = true;
+            this.Key2Label.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Key2Label.Location = new System.Drawing.Point(-2, 321);
+            this.Key2Label.MinimumSize = new System.Drawing.Size(55, 30);
+            this.Key2Label.Name = "Key2Label";
+            this.Key2Label.Size = new System.Drawing.Size(55, 30);
+            this.Key2Label.TabIndex = 16;
+            this.Key2Label.Text = "Key2 :";
+            this.Key2Label.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // LoadPathTextBox
+            // 
+            this.LoadPathTextBox.Font = new System.Drawing.Font("Times New Roman", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LoadPathTextBox.Location = new System.Drawing.Point(2, 166);
+            this.LoadPathTextBox.MinimumSize = new System.Drawing.Size(360, 40);
+            this.LoadPathTextBox.Name = "LoadPathTextBox";
+            this.LoadPathTextBox.ReadOnly = true;
+            this.LoadPathTextBox.Size = new System.Drawing.Size(360, 29);
+            this.LoadPathTextBox.TabIndex = 17;
+            // 
+            // Image1
+            // 
+            this.Image1.BackColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.Image1.Image = global::WindowsFormsApp1.Properties.Resources.No_Image;
+            this.Image1.ImageLocation = "";
+            this.Image1.Location = new System.Drawing.Point(378, 12);
+            this.Image1.Name = "Image1";
+            this.Image1.Size = new System.Drawing.Size(512, 512);
+            this.Image1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.Image1.TabIndex = 3;
+            this.Image1.TabStop = false;
+            // 
+            // FirstKeyTextBox
+            // 
+            this.FirstKeyTextBox.Font = new System.Drawing.Font("Times New Roman", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.FirstKeyTextBox.Location = new System.Drawing.Point(57, 282);
+            this.FirstKeyTextBox.MinimumSize = new System.Drawing.Size(305, 30);
+            this.FirstKeyTextBox.Name = "FirstKeyTextBox";
+            this.FirstKeyTextBox.ReadOnly = true;
+            this.FirstKeyTextBox.Size = new System.Drawing.Size(305, 29);
+            this.FirstKeyTextBox.TabIndex = 18;
+            // 
+            // SecondKeyTextBox
+            // 
+            this.SecondKeyTextBox.Font = new System.Drawing.Font("Times New Roman", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SecondKeyTextBox.Location = new System.Drawing.Point(57, 321);
+            this.SecondKeyTextBox.MinimumSize = new System.Drawing.Size(305, 30);
+            this.SecondKeyTextBox.Name = "SecondKeyTextBox";
+            this.SecondKeyTextBox.ReadOnly = true;
+            this.SecondKeyTextBox.Size = new System.Drawing.Size(305, 29);
+            this.SecondKeyTextBox.TabIndex = 19;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Times New Roman", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(158, 509);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(56, 21);
+            this.label1.TabIndex = 20;
+            this.label1.Text = "Time: ";
+            // 
+            // timeLabel
+            // 
+            this.timeLabel.AutoSize = true;
+            this.timeLabel.Font = new System.Drawing.Font("Times New Roman", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.timeLabel.Location = new System.Drawing.Point(220, 509);
+            this.timeLabel.Name = "timeLabel";
+            this.timeLabel.Size = new System.Drawing.Size(72, 21);
+            this.timeLabel.TabIndex = 21;
+            this.timeLabel.Text = "00:00:00";
+            // 
             // EncryptionScreen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(812, 600);
+            this.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.ClientSize = new System.Drawing.Size(902, 592);
+            this.Controls.Add(this.timeLabel);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.SecondKeyTextBox);
+            this.Controls.Add(this.FirstKeyTextBox);
+            this.Controls.Add(this.LoadPathTextBox);
+            this.Controls.Add(this.Key2Label);
+            this.Controls.Add(this.Key1label);
+            this.Controls.Add(this.GenerationButton);
+            this.Controls.Add(this.percentageLabel);
+            this.Controls.Add(this.VisualisationCheckBox);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.saveButton);
             this.Controls.Add(this.backButton);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.Image1);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.loadButton);
+            this.Controls.Add(this.EncryptButton);
+            this.MaximumSize = new System.Drawing.Size(918, 630);
+            this.MinimumSize = new System.Drawing.Size(918, 630);
             this.Name = "EncryptionScreen";
-            this.Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)(this.Image1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -139,16 +274,25 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button EncryptButton;
+        private System.Windows.Forms.Button loadButton;
         private System.Windows.Forms.PictureBox Image1;
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button backButton;
         private System.Windows.Forms.Button saveButton;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.CheckBox VisualisationCheckBox;
+        private System.Windows.Forms.Label percentageLabel;
+        private System.Windows.Forms.Button GenerationButton;
+        private System.Windows.Forms.Label Key1label;
+        private System.Windows.Forms.Label Key2Label;
+        private System.Windows.Forms.TextBox LoadPathTextBox;
+        private System.Windows.Forms.TextBox FirstKeyTextBox;
+        private System.Windows.Forms.TextBox SecondKeyTextBox;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label timeLabel;
     }
 }
 
