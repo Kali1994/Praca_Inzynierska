@@ -1,16 +1,20 @@
+#pragma once
+
 #include "stdafx.h"
 #include "ScramblingImage.h"
 
 
 ScramblingImage::ScramblingImage(string sName,string sResult)
 {
-	m_piPicture = new Picture(sName, sResult);
-	m_piENC = new Encryption(m_piPicture);
-	m_piPRGB = new PRBG(m_piPicture->iGetSize());
+	//m_piENC = new Encryption(m_piPicture);
+	//m_piPRGB = new PRBG(m_piPicture->iGetSize());
+
+	m_test = 0;
 }
 
 void ScramblingImage::vRunScrambling()
 {
+	/*
 	m_piPRGB->vGeneratePRBG();
 	m_piPRGB->vComputingKMRandRNS();
 	
@@ -41,10 +45,12 @@ void ScramblingImage::vRunScrambling()
 
 	m_piPicture->vWriteToImage();
 	m_piPicture->vSaveImage();
+	*/
 }
 
 void ScramblingImage::vRunDescrambling()
 {
+	/*
 	m_piPRGB->vGeneratePRBG();
 	m_piPRGB->vComputingKMRandRNS();
 
@@ -75,10 +81,31 @@ void ScramblingImage::vRunDescrambling()
 	m_piPicture->vSaveImage();
 
 	cout << "Deszyfrowanie Zakonczone" << endl;
+	*/
+}
+
+int ScramblingImage::getTest()
+{
+	return m_test;
+}
+
+void ScramblingImage::setTest(int value)
+{
+	m_test = value;
+}
+
+void ScramblingImage::loadImage(std::string path)
+{
+	m_picture.loadImage(path);
+}
+
+void ScramblingImage::saveImage(std::string path)
+{
+	m_picture.saveImage(path);
 }
 
 ScramblingImage::~ScramblingImage()
 {
-	delete m_piPRGB;
-	delete m_piENC;
+	//delete m_piPRGB;
+	//delete m_piENC;
 }

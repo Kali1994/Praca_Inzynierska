@@ -6,6 +6,7 @@
 class Encryption : public Extract
 {
 public:
+	/*
 	Encryption(Picture*);
 
 	uint8_t* u8ComputingLimitsOnScrambling(int,int,int);
@@ -19,4 +20,5 @@ private:
 	int m_iOldj;
 protected:
 	Picture* m_piPicture;
+	*/
 };

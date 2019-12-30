@@ -5,12 +5,13 @@
 
 PRBG::PRBG(int iSize)
 {
-	this->m_iSize = iSize;
+	/*this->m_iSize = iSize;
 
 	m_KMR = piu8AllocateMemory(m_KMR, iSize);
 	m_RNS = piu8AllocateMemory(m_RNS, iSize);
+	*/
 }
-
+/*
 void PRBG::vGeneratePRBG()
 {
 	system("cls");
@@ -168,3 +169,4 @@ void PRBG::vInitializeBothTable()
 	}
 
 }
+*/

@@ -7,7 +7,7 @@ class PRBG :public BitOperation
 public:
 	PRBG(){}
 	PRBG(int);
-
+	/*
 	void vGeneratePRBG();
 	void vComputingKMRandRNS();
 
@@ -33,4 +33,5 @@ private:
 	long double m_r2;
 
 	void vInitializeBothTable();
+	*/
 };

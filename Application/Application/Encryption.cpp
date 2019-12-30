@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Encryption.h"
 
-
+/*
 Encryption::Encryption(Picture* piPicture): m_piPicture(piPicture)
 {
 
@@ -201,3 +201,4 @@ void Encryption::vTransposingPixelColorDescrambling(uint8_t* piATable, uint8_t* 
 	}
 
 }
+*/
