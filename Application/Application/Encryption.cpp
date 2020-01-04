@@ -1,8 +1,9 @@
+#pragma once
 #include "stdafx.h"
 #include "Encryption.h"
 
-/*
-Encryption::Encryption(Picture* piPicture): m_piPicture(piPicture)
+
+Encryption::Encryption(Picture* piPicture): m_picture(piPicture)
 {
 
 }
@@ -12,13 +13,13 @@ Encryption::~Encryption()
 
 }
 
-uint8_t* Encryption::u8ComputingLimitsOnScrambling(int i, int j, int iRules)
+uint8_t* Encryption::computingLimitsOnScrambling(int i, int j, int iRules, Pixel& pixel)
 {
 
 	if (iRules != 0)
 	{
-		i = m_iOldi;
-		j = m_iOldj;
+		i = m_Oldi;
+		j = m_Oldj;
 	}
 
 	switch (m_iArrRules[iRules][0])
@@ -46,159 +47,160 @@ uint8_t* Encryption::u8ComputingLimitsOnScrambling(int i, int j, int iRules)
 	{
 		i = i + 512;
 	}
-	if(i >= m_piPicture->iGetSize())
+	if(i >= m_picture->getRows())
 	{
-		i = (i % m_piPicture->iGetSize()-1) + 1;
+		i = (i % m_picture->getRows() - 1) + 1;
 	}
 
 	if (j < 0)
 	{
 		j = j + 512;
 	}
-	if (j >= m_piPicture->iGetSize())
+	if (j >= m_picture->getColumns())
 	{
-		j = (j % m_piPicture->iGetSize()-1) + 1;
+		j = (j % m_picture->getColumns() - 1) + 1;
 	}
 
 	if (iRules == 0)
 	{
-		m_iOldi = i;
-		m_iOldj = j;
+		m_Oldi = i;
+		m_Oldj = j;
 	}
-	
-	return m_piPicture->u8GetRGBValueOfPixel(i, j);
+
+	pixel.posX = i;
+	pixel.posY = j;
+	return m_picture->getRGBValueOfPixel(i, j);
 }
 
-void Encryption::vTransposingPixelColor(uint8_t* piATable,uint8_t* piBTable, int i, int j, int k)
+void Encryption::transposingPixelColor(uint8_t* piATable,uint8_t* piBTable, int i, int j, int k)
 {
-	uint8_t Pixel = m_piPicture->u8GetValueOfPixel(i,j,k);
+	uint8_t Pixel = m_picture->getValueOfPixel(i,j,k);
 
 	if (this->m_iArrRules[0][2] == 0 && this->m_iArrRules[1][2] == 0 && k == 0)
 	{
-		m_piPicture->vSetValueofPixel(i, j, k, piATable[k + 1]);
+		m_picture->setValueofPixel(i, j, k, piATable[k + 1]);
 		piATable[k + 1] = piBTable[k + 2]; piBTable[k + 2] = Pixel;
 	}
 	else if (this->m_iArrRules[0][2] == 0 && this->m_iArrRules[1][2] == 1 && k == 0)
 	{
-		m_piPicture->vSetValueofPixel(i, j, k, piBTable[k + 2]);
+		m_picture->setValueofPixel(i, j, k, piBTable[k + 2]);
 		piBTable[k + 2] = Pixel; 
 	}
 	else if (this->m_iArrRules[0][2] == 1 && this->m_iArrRules[1][2] == 0 && k == 0)
 	{
-		m_piPicture->vSetValueofPixel(i, j, k, piATable[k + 2]);
+		m_picture->setValueofPixel(i, j, k, piATable[k + 2]);
 		piATable[k + 2] = piBTable[k + 1]; piBTable[k + 1] = Pixel; 
 	}
 	else if (this->m_iArrRules[0][2] == 1 && this->m_iArrRules[1][2] == 1 && k == 0)
 	{
-		m_piPicture->vSetValueofPixel(i, j, k, piBTable[k + 1]);
+		m_picture->setValueofPixel(i, j, k, piBTable[k + 1]);
 		piBTable[k + 1] = Pixel; 
 	}
 	else if (this->m_iArrRules[0][2] == 0 && this->m_iArrRules[1][2] == 0 && k == 1)
 	{
-		m_piPicture->vSetValueofPixel(i, j, k, piBTable[k - 1]);
+		m_picture->setValueofPixel(i, j, k, piBTable[k - 1]);
 		piBTable[k - 1] = Pixel;
 	}
 	else if (this->m_iArrRules[0][2] == 0 && this->m_iArrRules[1][2] == 1 && k == 1)
 	{
-		m_piPicture->vSetValueofPixel(i, j, k, piATable[k - 1]);
+		m_picture->setValueofPixel(i, j, k, piATable[k - 1]);
 		piATable[k - 1] = piBTable[k + 1]; piBTable[k + 1] = Pixel;
 	}
 	else if (this->m_iArrRules[0][2] == 1 && this->m_iArrRules[1][2] == 0 && k == 1)
 	{
-		m_piPicture->vSetValueofPixel(i, j, k, piATable[k + 1]);
+		m_picture->setValueofPixel(i, j, k, piATable[k + 1]);
 		piATable[k + 1] = Pixel;
 	}
 	else if (this->m_iArrRules[0][2] == 1 && this->m_iArrRules[1][2] == 1 && k == 1)
 	{
-		m_piPicture->vSetValueofPixel(i, j, k, piATable[k + 1]);
+		m_picture->setValueofPixel(i, j, k, piATable[k + 1]);
 		piATable[k + 1] = piBTable[k - 1]; piBTable[k - 1] = Pixel;
 	}
 	else if (this->m_iArrRules[0][2] == 0 && this->m_iArrRules[1][2] == 0 && k == 2)
 	{
-		m_piPicture->vSetValueofPixel(i, j, k, piATable[k - 1]);
+		m_picture->setValueofPixel(i, j, k, piATable[k - 1]);
 		piATable[k - 1] = piBTable[k - 2]; piBTable[k - 2] = Pixel; 
 	}
 	else if (this->m_iArrRules[0][2] == 0 && this->m_iArrRules[1][2] == 1 && k == 2)
 	{
-		m_piPicture->vSetValueofPixel(i, j, k, piATable[k - 2]);
+		m_picture->setValueofPixel(i, j, k, piATable[k - 2]);
 		piATable[k - 2] = piBTable[k - 1]; piBTable[k - 1] = Pixel; 
 	}
 	else if (this->m_iArrRules[0][2] == 1 && this->m_iArrRules[1][2] == 0 && k == 2)
 	{
-		m_piPicture->vSetValueofPixel(i, j, k, piATable[k - 2]);
+		m_picture->setValueofPixel(i, j, k, piATable[k - 2]);
 		piATable[k - 2] = Pixel;  
 	}
 	else if (this->m_iArrRules[0][2] == 1 && this->m_iArrRules[1][2] == 1 && k == 2)
 	{
-		m_piPicture->vSetValueofPixel(i, j, k, piBTable[k - 1]);
+		m_picture->setValueofPixel(i, j, k, piBTable[k - 1]);
 		piBTable[k - 1] = Pixel;
 	}
 }
 
-void Encryption::vTransposingPixelColorDescrambling(uint8_t* piATable, uint8_t* piBTable, int i, int j, int k)
+void Encryption::transposingPixelColorDescrambling(uint8_t* piATable, uint8_t* piBTable, int i, int j, int k)
 {
-	uint8_t Pixel = m_piPicture->u8GetValueOfPixel(i, j, k);
+	uint8_t Pixel = m_picture->getValueOfPixel(i, j, k);
 
 	if (this->m_iArrRules[0][2] == 0 && this->m_iArrRules[1][2] == 0 && k == 0)
 	{
-		m_piPicture->vSetValueofPixel(i, j, k, piBTable[k + 2]);
+		m_picture->setValueofPixel(i, j, k, piBTable[k + 2]);
 		piBTable[k + 2] = piATable[k + 1]; piATable[k + 1] = Pixel;
 	}
 	else if (this->m_iArrRules[0][2] == 0 && this->m_iArrRules[1][2] == 1 && k == 0)
 	{
-		m_piPicture->vSetValueofPixel(i, j, k, piBTable[k + 2]);
+		m_picture->setValueofPixel(i, j, k, piBTable[k + 2]);
 		piBTable[k + 2] = Pixel;
 	}
 	else if (this->m_iArrRules[0][2] == 1 && this->m_iArrRules[1][2] == 0 && k == 0)
 	{
-		m_piPicture->vSetValueofPixel(i, j, k, piBTable[k + 1]);
+		m_picture->setValueofPixel(i, j, k, piBTable[k + 1]);
 		piBTable[k + 1] = piATable[k + 2]; piATable[k + 2] = Pixel;
 	}
 	else if (this->m_iArrRules[0][2] == 1 && this->m_iArrRules[1][2] == 1 && k == 0)
 	{
-		m_piPicture->vSetValueofPixel(i, j, k, piBTable[k + 1]);
+		m_picture->setValueofPixel(i, j, k, piBTable[k + 1]);
 		piBTable[k + 1] = Pixel;
 	}
 	else if (this->m_iArrRules[0][2] == 0 && this->m_iArrRules[1][2] == 0 && k == 1)
 	{
-		m_piPicture->vSetValueofPixel(i, j, k, piBTable[k - 1]);
+		m_picture->setValueofPixel(i, j, k, piBTable[k - 1]);
 		piBTable[k - 1] = Pixel;
 	}
 	else if (this->m_iArrRules[0][2] == 0 && this->m_iArrRules[1][2] == 1 && k == 1)
 	{
-		m_piPicture->vSetValueofPixel(i, j, k, piBTable[k + 1]);
+		m_picture->setValueofPixel(i, j, k, piBTable[k + 1]);
 		piBTable[k + 1] = piATable[k - 1]; piATable[k - 1] = Pixel;
 	}
 	else if (this->m_iArrRules[0][2] == 1 && this->m_iArrRules[1][2] == 0 && k == 1)
 	{
-		m_piPicture->vSetValueofPixel(i, j, k, piATable[k + 1]);
+		m_picture->setValueofPixel(i, j, k, piATable[k + 1]);
 		piATable[k + 1] = Pixel;
 	}
 	else if (this->m_iArrRules[0][2] == 1 && this->m_iArrRules[1][2] == 1 && k == 1)
 	{
-		m_piPicture->vSetValueofPixel(i, j, k, piBTable[k - 1]);
+		m_picture->setValueofPixel(i, j, k, piBTable[k - 1]);
 		piBTable[k - 1] = piATable[k + 1]; piATable[k + 1] = Pixel;
 	}
 	else if (this->m_iArrRules[0][2] == 0 && this->m_iArrRules[1][2] == 0 && k == 2)
 	{
-		m_piPicture->vSetValueofPixel(i, j, k, piBTable[k - 2]);
+		m_picture->setValueofPixel(i, j, k, piBTable[k - 2]);
 		piBTable[k - 2] = piATable[k - 1]; piATable[k - 1] = Pixel;
 	}
 	else if (this->m_iArrRules[0][2] == 0 && this->m_iArrRules[1][2] == 1 && k == 2)
 	{
-		m_piPicture->vSetValueofPixel(i, j, k, piBTable[k - 1]);
+		m_picture->setValueofPixel(i, j, k, piBTable[k - 1]);
 		piBTable[k - 1] = piATable[k - 2]; piATable[k - 2] = Pixel;
 	}
 	else if (this->m_iArrRules[0][2] == 1 && this->m_iArrRules[1][2] == 0 && k == 2)
 	{
-		m_piPicture->vSetValueofPixel(i, j, k, piATable[k - 2]);
+		m_picture->setValueofPixel(i, j, k, piATable[k - 2]);
 		piATable[k - 2] = Pixel;
 	}
 	else if (this->m_iArrRules[0][2] == 1 && this->m_iArrRules[1][2] == 1 && k == 2)
 	{
-		m_piPicture->vSetValueofPixel(i, j, k, piBTable[k - 1]);
+		m_picture->setValueofPixel(i, j, k, piBTable[k - 1]);
 		piBTable[k - 1] = Pixel;
 	}
 
 }
-*/

@@ -8,27 +8,31 @@
 #include "Encryption.h"
 */
 
+#include "PRBG.h"
 #include "Picture.h"
+#include "KnightTourGenerator.h"
+#include "Encryption.h"
 
 class ScramblingImage
 {
 public:
-	ScramblingImage(string,string);
+	ScramblingImage();
 
-	void vRunScrambling();
+	Pixel* scramblingPixels(int, int, int);
 	void vRunDescrambling();
-
-	int getTest();
-	void setTest(int);
 
 	void loadImage(std::string path);
 	void saveImage(std::string path);
 
+	void generateKeys(double&, double&);
+	void preparingRules(double, double);
+
 	~ScramblingImage();
 private:
-	//PRBG* m_piPRGB;
-	//Encryption* m_piENC;
+	void setPixelsValue(Pixel*);
+	
 	Picture m_picture;
-
-	int m_test;
+	Encryption m_encryption;
+	KnightTourGenerator m_generatorKey;
+	PRBG m_scrambler;
 };

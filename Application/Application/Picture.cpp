@@ -2,119 +2,101 @@
 #include "stdafx.h"
 #include "Picture.h"
 
-
-Picture::Picture() 
+Picture::Picture() :
+	m_rows(0),
+	m_columns(0),
+	m_matrix(nullptr)
 {
-	/*
-	this->m_Image = imread(sName);
-	if (m_Image.empty())
-	{
-		cout << "Could not open or find the image" << endl;
-	}
-	else
-	{
-		this->m_sWindowName = "Obraz";
-		this->m_iSize = m_Image.rows;
 
-		m_piMatrix = piu8AllocateMemory(m_piMatrix, m_iSize);
-		this->vPictureLoadValue();
-	}
-	*/
-	
-}
-
-//void Picture::vPictureLoadValue()
-//{
-//	for (int i = 0; i <m_Image.rows; i++)
-//	{
-//		for (int j = 0; j < m_Image.cols; j++)
-//		{
-//			m_piMatrix[i][j][0] = m_Image.at<cv::Vec3b>(i, j)[2];
-//			m_piMatrix[i][j][1] = m_Image.at<cv::Vec3b>(i, j)[1];
-//			m_piMatrix[i][j][2] = m_Image.at<cv::Vec3b>(i, j)[0];
-//		}
-//	}
-//
-//}
-/*
-uint8_t* Picture::u8GetRGBValueOfPixel(int i, int j)
-{
-	return m_piMatrix[i][j];
-}
-
-void Picture::vDisplayImage()
-{
-	if (m_Image.empty())
-	{
-		cout << "Could not open or find the image" << endl;
-	}
-	else
-	{
-		m_sWindowName = "Picture";
-		namedWindow(m_sWindowName);
-		imshow(m_sWindowName, m_Image);
-		waitKey(0); 
-	}
-}
-
-int Picture::iGetSize()
-{
-	return m_iSize;
 }
 
 Picture::~Picture()
 {
-	if (!m_Image.empty())
+	if (m_matrix != nullptr)
 	{
-		destroyWindow(m_sWindowName);
+		deallocateMemory(m_matrix, m_rows, m_columns);
+		m_matrix = nullptr;
 	}
 }
-
-void Picture::vSetValueofPixel(int i, int j, int k,uint8_t u8Value)
-{
-	m_piMatrix[i][j][k] = u8Value;
-}
-
-void Picture::vSetPixel(int i, int j, uint8_t* RGB)
-{
-	for (int k = 0; k < 3; k++)
-	{
-		m_piMatrix[i][j][k] = RGB[k];
-	}
-}
-*/
-//void Picture::vWriteToImage()
-//{
-//	for (int i = 0; i < m_iSize; i++)
-//	{
-//		for (int j = 0; j < m_iSize; j++)
-//		{
-//			m_Image.at<cv::Vec3b>(i, j)[2] = m_piMatrix[i][j][0];
-//			m_Image.at<cv::Vec3b>(i, j)[1] = m_piMatrix[i][j][1];
-//			m_Image.at<cv::Vec3b>(i, j)[0] = m_piMatrix[i][j][2];
-//		}
-//	}
-//}
 
 void Picture::loadImage(std::string path)
 {
-	this->m_Image = imread(path);
-	//this->m_iSize = m_Image.rows;
+	if (m_matrix != nullptr)
+	{
+		deallocateMemory(m_matrix, m_rows, m_columns);
+		m_matrix = nullptr;
+	}
 
-	//m_piMatrix = piu8AllocateMemory(m_piMatrix, m_iSize);
-	//this->vPictureLoadValue();
+	m_image = imread(path);
+
+	m_rows = m_image.rows;
+	m_columns = m_image.cols;
+
+	m_matrix = allocateMemory(m_matrix, m_rows, m_columns);
+	pictureLoadValue();
 }
 
 void Picture::saveImage(std::string path)
 {
-	//vWriteToImage();
-	imwrite(path, m_Image);
+	writeToImage();
+	imwrite(path, m_image);
 }
 
-/*
-uint8_t Picture::u8GetValueOfPixel(int i, int j, int k)
+void Picture::setValueofPixel(int i, int j, int k, uint8_t u8Value)
 {
-	return m_piMatrix[i][j][k];
+	m_matrix[i][j][k] = u8Value;
 }
 
-*/
+void Picture::setPixel(int i, int j, uint8_t* RGB)
+{
+	for (int k = 0; k < 3; k++)
+	{
+		m_matrix[i][j][k] = RGB[k];
+	}
+}
+
+uint8_t* Picture::getRGBValueOfPixel(int i, int j)
+{
+	return m_matrix[i][j];
+}
+
+uint8_t Picture::getValueOfPixel(int i, int j, int k)
+{
+	return m_matrix[i][j][k];
+}
+
+int Picture::getRows(void)
+{
+	return m_rows;
+}
+
+int Picture::getColumns(void)
+{
+	return m_columns;
+}
+
+void Picture::pictureLoadValue()
+{
+	for (int i = 0; i < m_rows; i++)
+	{
+		for (int j = 0; j < m_columns; j++)
+		{
+			m_matrix[i][j][0] = m_image.at<cv::Vec3b>(i, j)[2];
+			m_matrix[i][j][1] = m_image.at<cv::Vec3b>(i, j)[1];
+			m_matrix[i][j][2] = m_image.at<cv::Vec3b>(i, j)[0];
+		}
+	}
+}
+
+void Picture::writeToImage()
+{
+	for (int i = 0; i < m_rows; i++)
+	{
+		for (int j = 0; j < m_columns; j++)
+		{
+			m_image.at<cv::Vec3b>(i, j)[2] = m_matrix[i][j][0];
+			m_image.at<cv::Vec3b>(i, j)[1] = m_matrix[i][j][1];
+			m_image.at<cv::Vec3b>(i, j)[0] = m_matrix[i][j][2];
+		}
+	}
+}

@@ -15,13 +15,16 @@ namespace WindowsFormsApp1
     public partial class EncryptionScreen : Form
     {
         AlgorithmWrapper.WrapperClass cppClass = new AlgorithmWrapper.WrapperClass();
+        Form messageForm = new MessageForm();
         String imageLocation = "";
+        double firstKey;
+        double secondKey;
 
         public EncryptionScreen()
         {
             InitializeComponent();
             CenterToScreen();
-            VisualisationCheckBox.Checked = true;
+            VisualisationCheckBox.Checked = false;
             GenerationButton.Enabled = false;
             saveButton.Enabled = false;
             EncryptButton.Enabled = false;
@@ -38,59 +41,111 @@ namespace WindowsFormsApp1
 
         void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
+            cppClass.preparingRules(firstKey, secondKey);
+
+            if (messageForm.InvokeRequired){
+                messageForm.Invoke(new MethodInvoker(
+                delegate () { messageForm.Close(); }));
+            }
+
             Bitmap bitmap = new Bitmap(imageLocation);
 
-            int width = bitmap.Width;
             int height = bitmap.Height;
+            int width = bitmap.Width;
 
             int percentage = 0;
             Stopwatch timer = new Stopwatch();
             timer.Start();
-            for (int i = 0; i < width; i++)
+
+            for (int i = 0; i < height; i++)
             {
-                for (int j = 0; j < height; j++)
+                for (int j = 0; j < width; j++)
                 {
-                    Color first = Color.FromArgb(255, 0, 0);
-                    Color second;
-                    Color third;
-                    
-                    if (Image1.InvokeRequired)
+                    for (int k = 0; k < 3; k++)
                     {
-                        Image1.Invoke(new MethodInvoker(
-                        delegate ()
-                        {
-                            //bitmap.SetPixel(i, j, first);
-                            Image1.Image = bitmap;
-                        }));
-                    }
-                    
 
-                    if (timeLabel.InvokeRequired)
+                        AlgorithmWrapper.WrapperPixels pixel= cppClass.scramblingPixels(i, j, k);
+
+                        Color first = Color.FromArgb(pixel.fR, pixel.fG, pixel.fB);
+                        Color second = Color.FromArgb(pixel.sR, pixel.sG, pixel.sB); ;
+                        Color third = Color.FromArgb(pixel.tR, pixel.tG, pixel.tB); ;
+
+                        if (VisualisationCheckBox.Checked)
+                        {
+                            if (Image1.InvokeRequired)
+                            {
+                                Image1.Invoke(new MethodInvoker(
+                                delegate ()
+                                {
+                                    bitmap.SetPixel(pixel.fposX, pixel.fposY, first);
+                                    bitmap.SetPixel(pixel.sposX, pixel.sposY, second);
+                                    bitmap.SetPixel(pixel.tposX, pixel.tposY, third);
+                                }));
+                            }
+                        }
+                        else
+                        {
+                            bitmap.SetPixel(pixel.fposX, pixel.fposY, first);
+                            bitmap.SetPixel(pixel.sposX, pixel.sposY, second);
+                            bitmap.SetPixel(pixel.tposX, pixel.tposY, third);
+                        }
+
+                        if (timeLabel.InvokeRequired)
+                        {
+                            timeLabel.Invoke(new MethodInvoker(
+                            delegate ()
+                            {
+                                TimeSpan ts = timer.Elapsed;
+                                timeLabel.Text = String.Format("{0:00}:{1:00}:{2:00}",
+                                ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
+                            }));
+                        }
+
+                        percentage++;
+                        backgroundWorker1.ReportProgress((percentage * 100) / (width * height * 3));
+                    }
+
+                    if (VisualisationCheckBox.Checked)
                     {
-                        timeLabel.Invoke(new MethodInvoker(
-                        delegate ()
+                        if (Image1.InvokeRequired)
                         {
-                            TimeSpan ts = timer.Elapsed;
-                            timeLabel.Text = String.Format("{0:00}:{1:00}:{2:00}",
-                            ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
-                        }));
+                            Image1.Invoke(new MethodInvoker(
+                            delegate () { Image1.Image = bitmap; }));
+                        }
                     }
-
-                    percentage++;
-                    backgroundWorker1.ReportProgress((percentage * 100) /(width * height));
                 }
             }
 
             timer.Stop();
 
-            if (saveButton.InvokeRequired)
-            {
+            if (saveButton.InvokeRequired){
                 saveButton.Invoke(new MethodInvoker(
-                delegate ()
-                {
-                    saveButton.Enabled = true;
-                }));
+                delegate (){ saveButton.Enabled = true; }));
             }
+
+            if (loadButton.InvokeRequired)
+            {
+                loadButton.Invoke(new MethodInvoker(
+                delegate () { loadButton.Enabled = true; }));
+            }
+
+            if (backButton.InvokeRequired){
+                backButton.Invoke(new MethodInvoker(
+                delegate (){ backButton.Enabled = true; }));
+            }
+
+            if (EncryptButton.InvokeRequired){
+                EncryptButton.Invoke(new MethodInvoker(
+                delegate () { EncryptButton.Enabled = false; }));
+            }
+
+            if (GenerationButton.InvokeRequired){
+                GenerationButton.Invoke(new MethodInvoker(
+                delegate () { GenerationButton.Enabled = false; }));
+            }
+
+            Image1.Image = bitmap;
+            MessageBox.Show("Picture was encrypted successfully!", "Information", MessageBoxButtons.OK,MessageBoxIcon.Information);
         }
 
         void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -102,22 +157,33 @@ namespace WindowsFormsApp1
         private void button1_Click(object sender, EventArgs e)
         {
             EncryptButton.Enabled = false;
+            VisualisationCheckBox.Enabled = false;
             loadButton.Enabled = false;
             backButton.Enabled = false;
             saveButton.Enabled = false;
+            messageForm.Show(this);
+
             backgroundWorker1.RunWorkerAsync();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Filter = "Image Files(*.jpg;)|*.jpg;";
+            dialog.Filter = "Image Files(*.png;)|*.png;";
 
             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 imageLocation = dialog.FileName;
                 Image1.ImageLocation = imageLocation;
                 LoadPathTextBox.Text = imageLocation;
+                GenerationButton.Enabled = true;
+                FirstKeyTextBox.Text = "";
+                SecondKeyTextBox.Text = "";
+                saveButton.Enabled = false;
+                progressBar1.Value = 0;
+                percentageLabel.Text = "0%";
+                timeLabel.Text = "00:00:00";
+
                 byte[] bytes = Encoding.ASCII.GetBytes(imageLocation);
 
                 unsafe
@@ -144,7 +210,7 @@ namespace WindowsFormsApp1
         private void saveButton_Click(object sender, EventArgs e)
         {
             SaveFileDialog dialog = new SaveFileDialog();
-            dialog.Filter = "JPG(*.JPG)|*.jpg";
+            dialog.Filter = "JPG(*.PNG)|*.png";
 
             if (dialog.ShowDialog() == DialogResult.OK)
             {
@@ -165,11 +231,14 @@ namespace WindowsFormsApp1
         {
             if (VisualisationCheckBox.Checked)
             {
-                Image1.ImageLocation = imageLocation;
-            }
-            else
-            {
-                Image1.Image = Properties.Resources.No_Image;
+                if (MessageBox.Show("Visualisation will delay encryption. Are you sure you want to check this option ?", "Information", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+                {
+                    VisualisationCheckBox.Checked = true;
+                }
+                else
+                {
+                    VisualisationCheckBox.Checked = false;
+                }
             }
         }
 
@@ -179,8 +248,22 @@ namespace WindowsFormsApp1
             EncryptButton.Enabled = true;
             VisualisationCheckBox.Enabled = true;
 
-            FirstKeyTextBox.Text = "1232312";
-            SecondKeyTextBox.Text = "546454";
+            unsafe
+            {
+                double firstKeyTmp;
+                double secondKeyTmp;
+
+                double* firstKeyPtr = &firstKeyTmp;
+                double* secondKeyPtr = &secondKeyTmp;
+
+                cppClass.generateKeys(firstKeyPtr, secondKeyPtr);
+
+                firstKey = firstKeyTmp;
+                secondKey = secondKeyTmp;
+
+                FirstKeyTextBox.Text = firstKey.ToString();
+                SecondKeyTextBox.Text = secondKey.ToString();
+            }
         }
     }
 }

@@ -1,3 +1,4 @@
+#pragma once
 #include "stdafx.h"
 #include "BitOperation.h"
 
@@ -8,7 +9,7 @@ int BitOperation::iBin2Dec(string sBinaryValue, int iStart, int iEnd)
 
 	sBinaryValue = sBinaryValue.substr(iStart-1, iEnd);
 
-	while (sBinaryValue.length() < m_iNumberBits)
+	while (sBinaryValue.length() < m_numberBits)
 	{
 		sBinaryValue = "0" + sBinaryValue;
 	}
@@ -28,7 +29,7 @@ string BitOperation::sDec2Bin(int iDecValue)
 {
 	string sReturnValue;
 
-	for (int i = m_iNumberBits; i > 0; --i)
+	for (int i = m_numberBits; i > 0; --i)
 	{
 		sReturnValue.push_back(cReadBit(iDecValue, i));
 	}

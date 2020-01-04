@@ -14,6 +14,6 @@ public:
 	string sFliplr(string);
 
 protected:
-	const int m_iNumberBits = 8;
+	const int m_numberBits = 8;
 
 };

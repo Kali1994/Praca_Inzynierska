@@ -1,3 +1,4 @@
+#pragma once
 #include "stdafx.h"
 #include "Extract.h"
 
@@ -24,6 +25,6 @@ void Extract::vGenerateKnightRules(uint8_t u8KMR,uint8_t u8RNS)
 	m_iArrRules[0][1] = u8RNS;
 	string sNb = BitOperation::sDec2Bin(m_iArrRules[0][1]);
 	sNb = BitOperation::sFliplr(sNb);
-	m_iArrRules[1][1] = iBin2Dec(sNb, 1, BitOperation::m_iNumberBits);
+	m_iArrRules[1][1] = iBin2Dec(sNb, 1, BitOperation::m_numberBits);
 
 }

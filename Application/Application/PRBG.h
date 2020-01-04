@@ -5,19 +5,22 @@
 class PRBG :public BitOperation
 {
 public:
-	PRBG(){}
-	PRBG(int);
-	/*
-	void vGeneratePRBG();
-	void vComputingKMRandRNS();
-
-	uint8_t u8GetValueKMR(int, int, int);
-	uint8_t u8GetValueRNS(int, int, int);
-
+	PRBG();
 	~PRBG();
+	
+	void generatePRBG(double, double, int, int);
+	void computingKMRandRNS();
+
+	uint8_t getValueKMR(int, int, int);
+	uint8_t getValueRNS(int, int, int);
+
 protected:
-	int m_iSize;
+	int m_rows;
+	int m_columns;
 private:
+	double* computeChaoticMap(double, double, double*);
+	void saveBitsToFiles(double*, double*);
+
 	ofstream m_oFile1;
 	ofstream m_oFile2;
 
@@ -32,6 +35,7 @@ private:
 	long double m_r1;
 	long double m_r2;
 
-	void vInitializeBothTable();
-	*/
+	int m_numberGenerateBits;
+
+	void initializeBothTable();
 };
