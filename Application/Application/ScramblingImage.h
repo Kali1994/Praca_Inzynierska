@@ -19,7 +19,7 @@ public:
 	ScramblingImage();
 
 	Pixel* scramblingPixels(int, int, int);
-	void vRunDescrambling();
+	Pixel* descramblingPixels(int, int, int);
 
 	void loadImage(std::string path);
 	void saveImage(std::string path);

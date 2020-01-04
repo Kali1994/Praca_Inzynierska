@@ -30,40 +30,24 @@ Pixel* ScramblingImage::scramblingPixels(int i, int j, int k)
 	return pixels;
 }
 
-void ScramblingImage::vRunDescrambling()
+Pixel* ScramblingImage::descramblingPixels(int i, int j, int k)
 {
-	/*
-	m_piPRGB->vGeneratePRBG();
-	m_piPRGB->vComputingKMRandRNS();
-
 	uint8_t* AImage;
 	uint8_t* BImage;
 
-	cout << "DeSzyfracja" << endl;
+	static Pixel pixels[3];
+	pixels[0].posX = i;
+	pixels[0].posY = j;
 
-	for (int k = 3; k >= 0; k--)
-	{
-		for (int i = m_piPicture->iGetSize() - 1; i >= 0; i--)
-		{
-			for (int j = m_piPicture->iGetSize() - 1; j >= 0; j--)
-			{
-			
-				m_piENC->vGenerateKnightRules(m_piPRGB->u8GetValueKMR(i, j, k), m_piPRGB->u8GetValueRNS(i, j, k));
+	m_encryption.vGenerateKnightRules(m_scrambler.getValueKMR(i, j, k), m_scrambler.getValueRNS(i, j, k));
 
-				AImage = m_piENC->u8ComputingLimitsOnScrambling(i, j, 0);
-				BImage = m_piENC->u8ComputingLimitsOnScrambling(i, j, 1);
+	AImage = m_encryption.computingLimitsOnScrambling(i, j, 0, pixels[1]);
+	BImage = m_encryption.computingLimitsOnScrambling(i, j, 1, pixels[2]);
 
-				m_piENC->vTransposingPixelColorDescrambling(AImage, BImage,i, j, k);
-			}
-			cout << i << endl;
-		}
-	}
+	m_encryption.transposingPixelColorDescrambling(AImage, BImage, i, j, k);
+	setPixelsValue(pixels);
 
-	m_piPicture->vWriteToImage();
-	m_piPicture->vSaveImage();
-
-	cout << "Deszyfrowanie Zakonczone" << endl;
-	*/
+	return pixels;
 }
 
 void ScramblingImage::loadImage(std::string path)

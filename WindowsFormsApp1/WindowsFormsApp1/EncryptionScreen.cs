@@ -57,11 +57,11 @@ namespace WindowsFormsApp1
             Stopwatch timer = new Stopwatch();
             timer.Start();
 
-            for (int i = 0; i < height; i++)
+            for (int k = 0; k < 3; k++)
             {
-                for (int j = 0; j < width; j++)
+                for (int i = 0; i < height; i++)
                 {
-                    for (int k = 0; k < 3; k++)
+                    for (int j = 0; j < width; j++)
                     {
 
                         AlgorithmWrapper.WrapperPixels pixel= cppClass.scramblingPixels(i, j, k);
@@ -77,17 +77,17 @@ namespace WindowsFormsApp1
                                 Image1.Invoke(new MethodInvoker(
                                 delegate ()
                                 {
-                                    bitmap.SetPixel(pixel.fposX, pixel.fposY, first);
-                                    bitmap.SetPixel(pixel.sposX, pixel.sposY, second);
-                                    bitmap.SetPixel(pixel.tposX, pixel.tposY, third);
+                                    bitmap.SetPixel(pixel.fposY, pixel.fposX, first);
+                                    bitmap.SetPixel(pixel.sposY, pixel.sposX, second);
+                                    bitmap.SetPixel(pixel.tposY, pixel.tposX, third);
                                 }));
                             }
                         }
                         else
                         {
-                            bitmap.SetPixel(pixel.fposX, pixel.fposY, first);
-                            bitmap.SetPixel(pixel.sposX, pixel.sposY, second);
-                            bitmap.SetPixel(pixel.tposX, pixel.tposY, third);
+                            bitmap.SetPixel(pixel.fposY, pixel.fposX, first);
+                            bitmap.SetPixel(pixel.sposY, pixel.sposX, second);
+                            bitmap.SetPixel(pixel.tposY, pixel.tposX, third);
                         }
 
                         if (timeLabel.InvokeRequired)
@@ -169,7 +169,7 @@ namespace WindowsFormsApp1
         private void button2_Click(object sender, EventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Filter = "Image Files(*.png;)|*.png;";
+            dialog.Filter = "Image files (*.jpg, *.jpeg, *.jpe, *.jfif, *.png) | *.jpg; *.jpeg; *.jpe; *.jfif; *.png";
 
             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
@@ -210,7 +210,7 @@ namespace WindowsFormsApp1
         private void saveButton_Click(object sender, EventArgs e)
         {
             SaveFileDialog dialog = new SaveFileDialog();
-            dialog.Filter = "JPG(*.PNG)|*.png";
+            dialog.Filter = "PNG(*.PNG)|*.png";
 
             if (dialog.ShowDialog() == DialogResult.OK)
             {
