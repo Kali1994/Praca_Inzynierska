@@ -9,13 +9,15 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Threading;
 using System.Diagnostics;
+using System.IO;
 
 namespace WindowsFormsApp1
 {
     public partial class EncryptionScreen : Form
     {
         AlgorithmWrapper.WrapperClass cppClass = new AlgorithmWrapper.WrapperClass();
-        Form messageForm = new MessageForm();
+        Form messageForm = new MessageForm("Preparing rules.  Please Wait");
+        Form messageKeys = new MessageForm("Generating keys. Please Wait");
         String imageLocation = "";
         double firstKey;
         double secondKey;
@@ -26,6 +28,7 @@ namespace WindowsFormsApp1
             CenterToScreen();
             VisualisationCheckBox.Checked = false;
             GenerationButton.Enabled = false;
+            saveKeysButton.Enabled = false;
             saveButton.Enabled = false;
             EncryptButton.Enabled = false;
             VisualisationCheckBox.Enabled = false;
@@ -161,6 +164,12 @@ namespace WindowsFormsApp1
             loadButton.Enabled = false;
             backButton.Enabled = false;
             saveButton.Enabled = false;
+            saveKeysButton.Enabled = false;
+            if (messageForm.IsDisposed)
+            {
+                messageForm = new MessageForm("Preparing rules.  Please Wait");
+
+            }
             messageForm.Show(this);
 
             backgroundWorker1.RunWorkerAsync();
@@ -173,29 +182,37 @@ namespace WindowsFormsApp1
 
             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                imageLocation = dialog.FileName;
-                Image1.ImageLocation = imageLocation;
-                LoadPathTextBox.Text = imageLocation;
-                GenerationButton.Enabled = true;
-                FirstKeyTextBox.Text = "";
-                SecondKeyTextBox.Text = "";
-                saveButton.Enabled = false;
-                progressBar1.Value = 0;
-                percentageLabel.Text = "0%";
-                timeLabel.Text = "00:00:00";
-
-                byte[] bytes = Encoding.ASCII.GetBytes(imageLocation);
+                bool result;
+                byte[] bytes = Encoding.ASCII.GetBytes(dialog.FileName);
 
                 unsafe
                 {
                     fixed (byte* p = bytes)
                     {
                         sbyte* sp = (sbyte*)p;
-                        cppClass.loadImage(sp);
+                        result = cppClass.loadImage(sp);
                     }
                 }
 
-                GenerationButton.Enabled = true;
+                if (result)
+                {
+                    imageLocation = dialog.FileName;
+                    Image1.ImageLocation = imageLocation;
+                    LoadPathTextBox.Text = imageLocation;
+                    GenerationButton.Enabled = true;
+                    FirstKeyTextBox.Text = "";
+                    SecondKeyTextBox.Text = "";
+                    saveButton.Enabled = false;
+                    saveKeysButton.Enabled = false;
+                    progressBar1.Value = 0;
+                    percentageLabel.Text = "0%";
+                    timeLabel.Text = "00:00:00";
+                    GenerationButton.Enabled = true;
+                }
+                else
+                {
+                    MessageBox.Show("Invalid Picture", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
 
         }
@@ -247,6 +264,13 @@ namespace WindowsFormsApp1
             GenerationButton.Enabled = false;
             EncryptButton.Enabled = true;
             VisualisationCheckBox.Enabled = true;
+            saveKeysButton.Enabled = true;
+
+            if (messageKeys.IsDisposed)
+            {
+                messageKeys = new MessageForm("Generating keys. Please Wait");
+            }
+            messageKeys.Show(this);
 
             unsafe
             {
@@ -263,6 +287,23 @@ namespace WindowsFormsApp1
 
                 FirstKeyTextBox.Text = firstKey.ToString();
                 SecondKeyTextBox.Text = secondKey.ToString();
+            }
+
+            messageKeys.Close();
+        }
+
+        private void saveKeysButton_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog dialog = new SaveFileDialog();
+            dialog.Filter = "TXT(*.TXT)|*.txt";
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                File.Create(dialog.FileName).Dispose();
+                TextWriter tw = new StreamWriter(dialog.FileName);
+                tw.WriteLine(FirstKeyTextBox.Text);
+                tw.WriteLine(SecondKeyTextBox.Text);
+                tw.Close();
             }
         }
     }

@@ -8,8 +8,17 @@ public:
 	PRBG();
 	~PRBG();
 	
-	void generatePRBG(double, double, int, int);
-	void computingKMRandRNS();
+	double* computeChaoticMap(double, double);
+
+	void computeRulesKMR();
+	void computeRulesRNS();
+	void deallocateRules();
+
+	void generatePRBG(double*, double*);
+	void setNumberGenerateBits(int rows, int columns);
+
+	long double getFirstParamControl();
+	long double getSecondParamControl();
 
 	uint8_t getValueKMR(int, int, int);
 	uint8_t getValueRNS(int, int, int);
@@ -18,9 +27,6 @@ protected:
 	int m_rows;
 	int m_columns;
 private:
-	double* computeChaoticMap(double, double, double*);
-	void saveBitsToFiles(double*, double*);
-
 	ofstream m_oFile1;
 	ofstream m_oFile2;
 

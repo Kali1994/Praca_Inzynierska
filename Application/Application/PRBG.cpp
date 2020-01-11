@@ -25,52 +25,6 @@ PRBG::~PRBG()
 	}
 }
 
-void PRBG::generatePRBG(double key1, double key2, int rows, int columns)
-{
-	m_numberGenerateBits = rows * columns * m_numberBits * 3;
-	m_rows = rows;
-	m_columns = columns;
-
-	double* firstFt = new double[m_numberGenerateBits];
-	double* secondFt = new double[m_numberGenerateBits];
-
-	computeChaoticMap(key1, m_r1, firstFt);
-	computeChaoticMap(key2, m_r2, secondFt);
-
-	saveBitsToFiles(firstFt, secondFt);
-
-	delete firstFt;
-	delete secondFt;
-}
-
-void PRBG::computingKMRandRNS()
-{
-	char cByteA[8], cByteB[8];
-
-	m_iFile1.open("Bits_A.txt");
-	m_iFile2.open("Bits_B.txt");
-
-	initializeBothTable();
-
-	for (int i = 0; i < m_rows; i++)
-	{
-		for (int j = 0; j < m_columns; j++)
-		{
-			for (int k = 0; k < 3; k++)
-			{
-				m_iFile1.read(cByteA, BitOperation::m_numberBits);
-				m_iFile2.read(cByteB, BitOperation::m_numberBits);
-
-				m_KMR[i][j][k] = BitOperation::iBin2Dec(cByteA, 1, BitOperation::m_numberBits);
-				m_RNS[i][j][k] = BitOperation::iBin2Dec(cByteB, 1, BitOperation::m_numberBits);
-			}
-		}
-	}
-
-	m_iFile1.close();
-	m_iFile2.close();
-}
-
 uint8_t PRBG::getValueKMR(int i, int j, int k)
 {
 	return m_KMR[i][j][k];
@@ -81,8 +35,10 @@ uint8_t PRBG::getValueRNS(int i, int j, int k)
 	return m_RNS[i][j][k];
 }
 
-double* PRBG::computeChaoticMap(double key, double controlParam, double* Ft)
+double* PRBG::computeChaoticMap(double key, double controlParam)
 {
+	double* Ft = new double[m_numberGenerateBits];
+
 	for (int i = 0; i < m_numberGenerateBits; i++)
 	{
 		Ft[i] = 2 / M_PI * atan(cos(key * controlParam) / sin(key * controlParam));
@@ -92,7 +48,78 @@ double* PRBG::computeChaoticMap(double key, double controlParam, double* Ft)
 	return Ft;
 }
 
-void PRBG::saveBitsToFiles(double* firstFt, double* secondFt)
+void PRBG::computeRulesKMR()
+{
+	char cByteA[8];
+
+	m_iFile1.open("Bits_A.txt");
+
+	m_KMR = allocateMemory(m_KMR, m_rows, m_columns);
+
+	for (int i = 0; i < m_rows; i++)
+	{
+		for (int j = 0; j < m_columns; j++)
+		{
+			for (int k = 0; k < 3; k++)
+			{
+				m_iFile1.read(cByteA, BitOperation::m_numberBits);
+				m_KMR[i][j][k] = BitOperation::iBin2Dec(cByteA, 1, BitOperation::m_numberBits);
+			}
+		}
+	}
+
+	m_iFile1.close();
+}
+
+void PRBG::computeRulesRNS()
+{
+	char cByteB[8];
+
+	m_iFile2.open("Bits_B.txt");
+
+	m_RNS = allocateMemory(m_RNS, m_rows, m_columns);
+
+	for (int i = 0; i < m_rows; i++)
+	{
+		for (int j = 0; j < m_columns; j++)
+		{
+			for (int k = 0; k < 3; k++)
+			{
+				m_iFile2.read(cByteB, BitOperation::m_numberBits);
+				m_RNS[i][j][k] = BitOperation::iBin2Dec(cByteB, 1, BitOperation::m_numberBits);
+			}
+		}
+	}
+
+	m_iFile2.close();
+}
+
+void PRBG::deallocateRules()
+{
+	if (m_KMR != nullptr)
+	{
+		deallocateMemory(m_KMR, m_rows, m_columns);
+		m_KMR = nullptr;
+	}
+
+	if (m_RNS != nullptr)
+	{
+		deallocateMemory(m_RNS, m_rows, m_columns);
+		m_RNS = nullptr;
+	}
+}
+
+long double PRBG::getFirstParamControl()
+{
+	return m_r1;
+}
+
+long double PRBG::getSecondParamControl()
+{
+	return m_r2;
+}
+
+void PRBG::generatePRBG(double* firstFt, double* secondFt)
 {
 	double Ft;
 
@@ -136,34 +163,9 @@ void PRBG::saveBitsToFiles(double* firstFt, double* secondFt)
 	m_oFile2.close();
 }
 
-void PRBG::initializeBothTable()
+void PRBG::setNumberGenerateBits(int rows, int columns)
 {
-	if (m_KMR != nullptr)
-	{
-		deallocateMemory(m_KMR, m_rows, m_columns);
-		m_KMR = nullptr;
-	}
-
-	if (m_RNS != nullptr)
-	{
-		deallocateMemory(m_RNS, m_rows, m_columns);
-		m_RNS = nullptr;
-	}
-
-	m_KMR = allocateMemory(m_KMR, m_rows, m_columns);
-	m_RNS = allocateMemory(m_RNS, m_rows, m_columns);
-
-	for (int i = 0; i < m_rows; i++)
-	{
-		for (int j = 0; j < m_columns; j++)
-		{
-			m_KMR[i][j][0] = 0;
-			m_KMR[i][j][1] = 0;
-			m_KMR[i][j][2] = 0;
-
-			m_RNS[i][j][0] = 0;
-			m_RNS[i][j][1] = 0;
-			m_RNS[i][j][2] = 0;
-		}
-	}
+	m_numberGenerateBits = rows * columns * m_numberBits * 3;
+	m_rows = rows;
+	m_columns = columns;
 }

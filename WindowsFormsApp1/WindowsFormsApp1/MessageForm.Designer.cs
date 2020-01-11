@@ -46,9 +46,8 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(70, 33);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(221, 21);
+            this.label1.Size = new System.Drawing.Size(0, 21);
             this.label1.TabIndex = 1;
-            this.label1.Text = "Preparing rules.  Please Wait";
             // 
             // MessageForm
             // 

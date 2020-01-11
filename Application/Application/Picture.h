@@ -7,7 +7,7 @@ public:
 	Picture();
 	~Picture();
 
-	void loadImage(std::string path);
+	bool loadImage(std::string path);
 	void saveImage(std::string path);
 
 	void setValueofPixel(int, int, int, uint8_t);

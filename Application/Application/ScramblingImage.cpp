@@ -50,9 +50,18 @@ Pixel* ScramblingImage::descramblingPixels(int i, int j, int k)
 	return pixels;
 }
 
-void ScramblingImage::loadImage(std::string path)
+bool ScramblingImage::loadImage(std::string path)
 {
-	m_picture.loadImage(path);
+	if (m_picture.loadImage(path))
+	{
+		m_scrambler.deallocateRules();
+		m_scrambler.setNumberGenerateBits(m_picture.getRows(), m_picture.getColumns());
+
+		return true;
+	}
+
+	return false;
+
 }
 
 void ScramblingImage::saveImage(std::string path)
@@ -60,16 +69,36 @@ void ScramblingImage::saveImage(std::string path)
 	m_picture.saveImage(path);
 }
 
-void ScramblingImage::generateKeys(double& key1, double& key2)
+void ScramblingImage::knightTravel(int x, int y, int moves, int chessBoard[][8])
 {
-	key1 = 0.687754925117; //m_generatorKey.generateKey();
-	key2 = -0.013462335467; //m_generatorKey.generateKey();
+	m_generatorKey.knightTravel(x, y, moves, chessBoard);
 }
 
-void ScramblingImage::preparingRules(double key1, double key2)
+void ScramblingImage::generateKeys(double& key1, double& key2, int* chessBoard)
 {
-	m_scrambler.generatePRBG(key1, key2, m_picture.getRows(), m_picture.getColumns());
-	m_scrambler.computingKMRandRNS();
+	m_generatorKey.generateKeys(key1, key2, chessBoard);
+}
+
+void ScramblingImage::generatePRBG(double* firstFt, double* secondFt)
+{
+	m_scrambler.generatePRBG(firstFt, secondFt);
+}
+
+void ScramblingImage::computeRulesKMR()
+{
+	m_scrambler.computeRulesKMR();
+}
+
+void ScramblingImage::computeRulesRNS()
+{
+	m_scrambler.computeRulesRNS();
+}
+
+double* ScramblingImage::computeChaoticMap(double key, bool controlParam)
+{
+	double controlParameter = controlParam ? m_scrambler.getFirstParamControl() : m_scrambler.getSecondParamControl();
+
+	return m_scrambler.computeChaoticMap(key, controlParameter);
 }
 
 ScramblingImage::~ScramblingImage()

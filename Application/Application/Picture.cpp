@@ -19,21 +19,30 @@ Picture::~Picture()
 	}
 }
 
-void Picture::loadImage(std::string path)
+bool Picture::loadImage(std::string path)
 {
-	if (m_matrix != nullptr)
+	if ((10 > imread(path).rows) || (10 > imread(path).cols))
 	{
-		deallocateMemory(m_matrix, m_rows, m_columns);
-		m_matrix = nullptr;
+		return false;
 	}
+	else
+	{
+		if (m_matrix != nullptr)
+		{
+			deallocateMemory(m_matrix, m_rows, m_columns);
+			m_matrix = nullptr;
+		}
 
-	m_image = imread(path);
+		m_image = imread(path);
 
-	m_rows = m_image.rows;
-	m_columns = m_image.cols;
+		m_rows = m_image.rows;
+		m_columns = m_image.cols;
 
-	m_matrix = allocateMemory(m_matrix, m_rows, m_columns);
-	pictureLoadValue();
+		m_matrix = allocateMemory(m_matrix, m_rows, m_columns);
+		pictureLoadValue();
+
+		return true;
+	}
 }
 
 void Picture::saveImage(std::string path)

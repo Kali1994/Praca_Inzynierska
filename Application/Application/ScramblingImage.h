@@ -21,11 +21,17 @@ public:
 	Pixel* scramblingPixels(int, int, int);
 	Pixel* descramblingPixels(int, int, int);
 
-	void loadImage(std::string path);
+	bool loadImage(std::string path);
 	void saveImage(std::string path);
 
-	void generateKeys(double&, double&);
-	void preparingRules(double, double);
+	void knightTravel(int x, int y, int moves, int chessBoard[][8]);
+	void generateKeys(double&, double&, int* chessBoard);
+	void generatePRBG(double*, double*);
+
+	void computeRulesKMR();
+	void computeRulesRNS();
+
+	double* computeChaoticMap(double, bool);
 
 	~ScramblingImage();
 private:

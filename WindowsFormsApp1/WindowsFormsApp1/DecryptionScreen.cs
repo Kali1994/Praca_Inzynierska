@@ -15,7 +15,8 @@ namespace WindowsFormsApp1
     public partial class DecryptionScreen : Form
     {
         AlgorithmWrapper.WrapperClass cppClass = new AlgorithmWrapper.WrapperClass();
-        Form messageForm = new MessageForm();
+        Form messageForm = new MessageForm("Preparing rules.  Please Wait");
+        Form messageKeys = new MessageForm("Generating keys. Please Wait");
         String imageLocation = "";
         double firstKey;
         double secondKey;
@@ -162,7 +163,13 @@ namespace WindowsFormsApp1
             loadButton.Enabled = false;
             backButton.Enabled = false;
             saveButton.Enabled = false;
+            if (messageForm.IsDisposed)
+            {
+                messageForm = new MessageForm("Preparing rules.  Please Wait");
+
+            }
             messageForm.Show(this);
+            
 
             backgroundWorker1.RunWorkerAsync();
         }
@@ -174,28 +181,36 @@ namespace WindowsFormsApp1
 
             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                imageLocation = dialog.FileName;
-                Image1.ImageLocation = imageLocation;
-                LoadPathTextBox.Text = imageLocation;
-                FirstKeyTextBox.Text = "";
-                SecondKeyTextBox.Text = "";
-                FirstKeyTextBox.ReadOnly = false;
-                SecondKeyTextBox.ReadOnly = false;
-                button1.Enabled = true;
-                saveButton.Enabled = false;
-                progressBar1.Value = 0;
-                percentageLabel.Text = "0%";
-                timeLabel.Text = "00:00:00";
-
-                byte[] bytes = Encoding.ASCII.GetBytes(imageLocation);
+                bool result;
+                byte[] bytes = Encoding.ASCII.GetBytes(dialog.FileName);
 
                 unsafe
                 {
                     fixed (byte* p = bytes)
                     {
                         sbyte* sp = (sbyte*)p;
-                        cppClass.loadImage(sp);
+                        result = cppClass.loadImage(sp);
                     }
+                }
+
+                if (result)
+                {
+                    imageLocation = dialog.FileName;
+                    Image1.ImageLocation = imageLocation;
+                    LoadPathTextBox.Text = imageLocation;
+                    FirstKeyTextBox.Text = "";
+                    SecondKeyTextBox.Text = "";
+                    FirstKeyTextBox.ReadOnly = false;
+                    SecondKeyTextBox.ReadOnly = false;
+                    button1.Enabled = true;
+                    saveButton.Enabled = false;
+                    progressBar1.Value = 0;
+                    percentageLabel.Text = "0%";
+                    timeLabel.Text = "00:00:00";
+                }
+                else
+                {
+                    MessageBox.Show("Invalid Picture", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
 
@@ -280,22 +295,36 @@ namespace WindowsFormsApp1
         {
             if (key.StartsWith("-"))
             {
-                if (key.Length != 15 || key.ToCharArray().Count(c => c == '.') != 1 ||
-                    !isDigits(key))
+                if (key.Length < 10  || key.Length > 15 || key.ToCharArray().Count(c => c == '.') != 1 ||
+                    !isDigits(key) || !validateRange(key))
                 {
                     return false;
                 }
             }
             else
             {
-                if (key.Length != 14 || key.ToCharArray().Count(c => c == '.') != 1 ||
-                    !isDigits(key))
+                if (key.Length < 9 || key.Length > 14 || key.ToCharArray().Count(c => c == '.') != 1 ||
+                    !isDigits(key) || !validateRange(key))
                 {
                     return false;
                 }
             }
 
             return true;
+        }
+
+        private bool validateRange(String key)
+        {
+            double value = Convert.ToDouble(key);
+
+            if ((1 > value) && (-1 < value))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

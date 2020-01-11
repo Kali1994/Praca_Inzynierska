@@ -47,6 +47,7 @@
             this.SecondKeyTextBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.timeLabel = new System.Windows.Forms.Label();
+            this.saveKeysButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.Image1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -124,7 +125,7 @@
             // 
             this.VisualisationCheckBox.AutoSize = true;
             this.VisualisationCheckBox.Font = new System.Drawing.Font("Times New Roman", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.VisualisationCheckBox.Location = new System.Drawing.Point(2, 377);
+            this.VisualisationCheckBox.Location = new System.Drawing.Point(2, 418);
             this.VisualisationCheckBox.Name = "VisualisationCheckBox";
             this.VisualisationCheckBox.Size = new System.Drawing.Size(122, 25);
             this.VisualisationCheckBox.TabIndex = 9;
@@ -240,12 +241,24 @@
             this.timeLabel.TabIndex = 21;
             this.timeLabel.Text = "00:00:00";
             // 
+            // saveKeysButton
+            // 
+            this.saveKeysButton.Location = new System.Drawing.Point(227, 366);
+            this.saveKeysButton.MinimumSize = new System.Drawing.Size(135, 40);
+            this.saveKeysButton.Name = "saveKeysButton";
+            this.saveKeysButton.Size = new System.Drawing.Size(135, 40);
+            this.saveKeysButton.TabIndex = 22;
+            this.saveKeysButton.Text = "Save Keys";
+            this.saveKeysButton.UseVisualStyleBackColor = true;
+            this.saveKeysButton.Click += new System.EventHandler(this.saveKeysButton_Click);
+            // 
             // EncryptionScreen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.InactiveCaption;
             this.ClientSize = new System.Drawing.Size(902, 592);
+            this.Controls.Add(this.saveKeysButton);
             this.Controls.Add(this.timeLabel);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.SecondKeyTextBox);
@@ -293,6 +306,7 @@
         private System.Windows.Forms.TextBox SecondKeyTextBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label timeLabel;
+        private System.Windows.Forms.Button saveKeysButton;
     }
 }
 

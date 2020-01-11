@@ -231,13 +231,13 @@
             // 
             // button1
             // 
-            this.button1.Font = new System.Drawing.Font("Times New Roman", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button1.Location = new System.Drawing.Point(123, 326);
             this.button1.MinimumSize = new System.Drawing.Size(135, 40);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(135, 40);
             this.button1.TabIndex = 22;
-            this.button1.Text = "approve keys";
+            this.button1.Text = "Approve Keys";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click_1);
             // 
@@ -245,14 +245,13 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Times New Roman", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(12, 204);
+            this.label4.Location = new System.Drawing.Point(69, 214);
             this.label4.MaximumSize = new System.Drawing.Size(340, 35);
-            this.label4.MinimumSize = new System.Drawing.Size(300, 35);
+            this.label4.MinimumSize = new System.Drawing.Size(300, 15);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(337, 35);
+            this.label4.Size = new System.Drawing.Size(300, 15);
             this.label4.TabIndex = 23;
-            this.label4.Text = "Enter the keys used to encrypt the image. Key should consist of 12 decimal places" +
-    " after comma and value between [-1,1]";
+            this.label4.Text = "Enter the keys used to encrypt the image.";
             // 
             // DecryptionScreen
             // 

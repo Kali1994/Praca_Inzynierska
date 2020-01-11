@@ -12,9 +12,10 @@ namespace WindowsFormsApp1
 {
     public partial class MessageForm : Form
     {
-        public MessageForm()
+        public MessageForm(String info)
         {
             InitializeComponent();
+            label1.Text = info;
             CenterToScreen();
         }
     }
