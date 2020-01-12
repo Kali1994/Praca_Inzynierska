@@ -20,7 +20,7 @@ Pixel* ScramblingImage::scramblingPixels(int i, int j, int k)
 	pixels[0].posY = j;
 
 	m_encryption.vGenerateKnightRules(m_scrambler.getValueKMR(i, j, k), m_scrambler.getValueRNS(i, j, k));
-				
+
 	AImage = m_encryption.computingLimitsOnScrambling(i, j, 0, pixels[1]);
 	BImage = m_encryption.computingLimitsOnScrambling(i, j, 1, pixels[2]);
 
@@ -43,6 +43,50 @@ Pixel* ScramblingImage::descramblingPixels(int i, int j, int k)
 
 	AImage = m_encryption.computingLimitsOnScrambling(i, j, 0, pixels[1]);
 	BImage = m_encryption.computingLimitsOnScrambling(i, j, 1, pixels[2]);
+
+	m_encryption.transposingPixelColorDescrambling(AImage, BImage, i, j, k);
+	setPixelsValue(pixels);
+
+	return pixels;
+}
+
+Pixel* ScramblingImage::threadScramblingPixels(int i, int j, int k, int startX, int endX, int startY, int endY)
+{
+	uint8_t* AImage;
+	uint8_t* BImage;
+
+	static Pixel pixels[3];
+	pixels[0].posX = i;
+	pixels[0].posY = j;
+
+	DividedImage image(startX, endX, startY, endY);
+
+	m_encryption.vGenerateKnightRules(m_scrambler.getValueKMR(i, j, k), m_scrambler.getValueRNS(i, j, k));
+				
+	AImage = m_encryption.threadComputingLimitsOnScrambling(i, j, 0, pixels[1], image);
+	BImage = m_encryption.threadComputingLimitsOnScrambling(i, j, 1, pixels[2], image);
+
+	m_encryption.transposingPixelColor(AImage, BImage, i, j, k);
+	setPixelsValue(pixels);
+
+	return pixels;
+}
+
+Pixel* ScramblingImage::threadDescramblingPixels(int i, int j, int k, int startX, int endX, int startY, int endY)
+{
+	uint8_t* AImage;
+	uint8_t* BImage;
+
+	static Pixel pixels[3];
+	pixels[0].posX = i;
+	pixels[0].posY = j;
+
+	DividedImage image(startX, endX, startY, endY);
+
+	m_encryption.vGenerateKnightRules(m_scrambler.getValueKMR(i, j, k), m_scrambler.getValueRNS(i, j, k));
+
+	AImage = m_encryption.threadComputingLimitsOnScrambling(i, j, 0, pixels[1], image);
+	BImage = m_encryption.threadComputingLimitsOnScrambling(i, j, 1, pixels[2], image);
 
 	m_encryption.transposingPixelColorDescrambling(AImage, BImage, i, j, k);
 	setPixelsValue(pixels);

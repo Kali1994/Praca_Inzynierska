@@ -18,9 +18,18 @@ namespace WindowsFormsApp1
         AlgorithmWrapper.WrapperClass cppClass = new AlgorithmWrapper.WrapperClass();
         Form messageForm = new MessageForm("Preparing rules.  Please Wait");
         Form messageKeys = new MessageForm("Generating keys. Please Wait");
+
+        Bitmap bitmap;
         String imageLocation = "";
+
         double firstKey;
         double secondKey;
+
+        Stopwatch timer;
+        int percentage = 0;
+        int numberCount;
+
+        private static Mutex mutProgress = new Mutex();
 
         public EncryptionScreen()
         {
@@ -32,6 +41,8 @@ namespace WindowsFormsApp1
             saveButton.Enabled = false;
             EncryptButton.Enabled = false;
             VisualisationCheckBox.Enabled = false;
+            threadCheckBox.Enabled = false;
+            threadNumericUpDown.Enabled = false;
 
             // To report progress from the background worker we need to set this property
             backgroundWorker1.WorkerReportsProgress = true;
@@ -42,32 +53,22 @@ namespace WindowsFormsApp1
             backgroundWorker1.ProgressChanged += new ProgressChangedEventHandler(backgroundWorker1_ProgressChanged);
         }
 
-        void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        void Progress()
         {
-            cppClass.preparingRules(firstKey, secondKey);
+            percentage++;
+            backgroundWorker1.ReportProgress((percentage * 100) / numberCount);
+        }
 
-            if (messageForm.InvokeRequired){
-                messageForm.Invoke(new MethodInvoker(
-                delegate () { messageForm.Close(); }));
-            }
-
-            Bitmap bitmap = new Bitmap(imageLocation);
-
-            int height = bitmap.Height;
-            int width = bitmap.Width;
-
-            int percentage = 0;
-            Stopwatch timer = new Stopwatch();
-            timer.Start();
-
+        void ScramblingPixels(int startX, int endX, int startY, int endY)
+        {
             for (int k = 0; k < 3; k++)
             {
-                for (int i = 0; i < height; i++)
+                for (int i = startX; i < endX; i++)
                 {
-                    for (int j = 0; j < width; j++)
+                    for (int j = startY; j < endY; j++)
                     {
 
-                        AlgorithmWrapper.WrapperPixels pixel= cppClass.scramblingPixels(i, j, k);
+                        AlgorithmWrapper.WrapperPixels pixel = cppClass.scramblingPixels(i, j, k);
 
                         Color first = Color.FromArgb(pixel.fR, pixel.fG, pixel.fB);
                         Color second = Color.FromArgb(pixel.sR, pixel.sG, pixel.sB); ;
@@ -103,9 +104,7 @@ namespace WindowsFormsApp1
                                 ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
                             }));
                         }
-
-                        percentage++;
-                        backgroundWorker1.ReportProgress((percentage * 100) / (width * height * 3));
+                        Progress();
                     }
 
                     if (VisualisationCheckBox.Checked)
@@ -118,12 +117,125 @@ namespace WindowsFormsApp1
                     }
                 }
             }
+        }
 
+        void threadScramblingPixels(object data)
+        {
+            ThreadParameters param = (ThreadParameters)data;
+
+            for (int k = 0; k < 3; k++)
+            {
+                for (int i = param.startX; i < param.endX; i++)
+                {
+                    for (int j = param.startY; j < param.endY; j++)
+                    {
+
+                        AlgorithmWrapper.WrapperPixels pixel = cppClass.threadScramblingPixels(i, j, k, param.startX, param.endX, param.startY, param.endY);
+
+                        Color first = Color.FromArgb(pixel.fR, pixel.fG, pixel.fB);
+                        Color second = Color.FromArgb(pixel.sR, pixel.sG, pixel.sB); ;
+                        Color third = Color.FromArgb(pixel.tR, pixel.tG, pixel.tB); ;
+
+                        if (VisualisationCheckBox.Checked)
+                        {
+                            if (Image1.InvokeRequired)
+                            {
+                                Image1.Invoke(new MethodInvoker(
+                                delegate ()
+                                {
+                                    bitmap.SetPixel(pixel.fposY, pixel.fposX, first);
+                                    bitmap.SetPixel(pixel.sposY, pixel.sposX, second);
+                                    bitmap.SetPixel(pixel.tposY, pixel.tposX, third);
+                                }));
+                            }
+                        }
+                        else
+                        {
+                            bitmap.SetPixel(pixel.fposY, pixel.fposX, first);
+                            bitmap.SetPixel(pixel.sposY, pixel.sposX, second);
+                            bitmap.SetPixel(pixel.tposY, pixel.tposX, third);
+                        }
+
+                        mutProgress.WaitOne();
+                        if (timeLabel.InvokeRequired)
+                        {
+                            timeLabel.Invoke(new MethodInvoker(
+                            delegate ()
+                            {
+                                TimeSpan ts = timer.Elapsed;
+                                timeLabel.Text = String.Format("{0:00}:{1:00}:{2:00}",
+                                ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
+                            }));
+                        }
+
+                        Progress();
+                        mutProgress.ReleaseMutex();
+                    }
+
+                    if (VisualisationCheckBox.Checked)
+                    {
+                        if (Image1.InvokeRequired)
+                        {
+                            Image1.Invoke(new MethodInvoker(
+                            delegate () { Image1.Image = bitmap; }));
+                        }
+                    }
+                }
+            }
+        }
+
+        void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+            cppClass.preparingRules(firstKey, secondKey);
+
+            if (messageForm.InvokeRequired) {
+                messageForm.Invoke(new MethodInvoker(
+                delegate () { messageForm.Close(); }));
+            }
+
+            bitmap = new Bitmap(imageLocation);
+            numberCount = bitmap.Width * bitmap.Height * 3;
+
+            timer = new Stopwatch();
+            timer.Start();
+
+            if (threadCheckBox.Checked)
+            {
+                int fieldX = (bitmap.Height / 3);
+                int fieldY = (bitmap.Width / 3);
+
+                Thread[] threads = new Thread[9];
+
+                for (int i = 0; i < 3; i++)
+                {
+                    for (int j = 0; j < 3; j++)
+                    {
+                        threads[(i * 3) + j] = new Thread(new ParameterizedThreadStart(this.threadScramblingPixels));
+                        threads[(i * 3) + j].Start(new ThreadParameters(fieldX * i, fieldX * (i + 1), fieldY * j, fieldY * (j + 1)));
+                    }
+                }
+
+                for (int i = 0; i < 9; i++)
+                {
+                    threads[i].Join();
+                }
+            }
+            else
+            {
+                ScramblingPixels(0, bitmap.Height, 0, bitmap.Width);
+            }
+               
             timer.Stop();
 
             if (saveButton.InvokeRequired){
                 saveButton.Invoke(new MethodInvoker(
                 delegate (){ saveButton.Enabled = true; }));
+            }
+
+            if (saveKeysButton.InvokeRequired)
+            {
+                saveKeysButton.Invoke(new MethodInvoker(
+                delegate () { saveKeysButton.Enabled = true; }));
             }
 
             if (loadButton.InvokeRequired)
@@ -165,6 +277,9 @@ namespace WindowsFormsApp1
             backButton.Enabled = false;
             saveButton.Enabled = false;
             saveKeysButton.Enabled = false;
+            threadCheckBox.Enabled = false;
+            threadNumericUpDown.Enabled = false;
+
             if (messageForm.IsDisposed)
             {
                 messageForm = new MessageForm("Preparing rules.  Please Wait");
@@ -208,6 +323,12 @@ namespace WindowsFormsApp1
                     percentageLabel.Text = "0%";
                     timeLabel.Text = "00:00:00";
                     GenerationButton.Enabled = true;
+                    VisualisationCheckBox.Checked = false;
+                    VisualisationCheckBox.Enabled = false;
+                    threadCheckBox.Checked = false;
+                    threadCheckBox.Enabled = false;
+                    threadNumericUpDown.Value = 1;
+                    threadNumericUpDown.Enabled = false;
                 }
                 else
                 {
@@ -265,6 +386,7 @@ namespace WindowsFormsApp1
             EncryptButton.Enabled = true;
             VisualisationCheckBox.Enabled = true;
             saveKeysButton.Enabled = true;
+            threadCheckBox.Enabled = true;
 
             if (messageKeys.IsDisposed)
             {
@@ -305,6 +427,45 @@ namespace WindowsFormsApp1
                 tw.WriteLine(SecondKeyTextBox.Text);
                 tw.Close();
             }
+        }
+
+        private void threadCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            Bitmap picture = new Bitmap(imageLocation);
+            if (threadCheckBox.Checked)
+            {
+                if (50 < picture.Height && 50 < picture.Width)
+                {
+                    threadCheckBox.Checked = true;
+                    threadNumericUpDown.Enabled = true;
+                }
+                else
+                {
+                    MessageBox.Show("Picture is too small for this option", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    threadCheckBox.Checked = false;
+                }
+            }
+            else
+            {
+                threadNumericUpDown.Value = 1;
+                threadNumericUpDown.Enabled = false;
+            }
+        }
+    }
+
+    public class ThreadParameters
+    {
+        public int startX;
+        public int endX;
+        public int startY;
+        public int endY;
+
+        public ThreadParameters(int StartX, int EndX, int StartY, int EndY)
+        {
+            startX = StartX;
+            endX = EndX;
+            startY = StartY;
+            endY = EndY;
         }
     }
 }

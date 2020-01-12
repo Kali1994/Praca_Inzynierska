@@ -48,7 +48,10 @@
             this.label1 = new System.Windows.Forms.Label();
             this.timeLabel = new System.Windows.Forms.Label();
             this.saveKeysButton = new System.Windows.Forms.Button();
+            this.threadCheckBox = new System.Windows.Forms.CheckBox();
+            this.threadNumericUpDown = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.Image1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.threadNumericUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // EncryptButton
@@ -252,12 +255,48 @@
             this.saveKeysButton.UseVisualStyleBackColor = true;
             this.saveKeysButton.Click += new System.EventHandler(this.saveKeysButton_Click);
             // 
+            // threadCheckBox
+            // 
+            this.threadCheckBox.AutoSize = true;
+            this.threadCheckBox.Font = new System.Drawing.Font("Times New Roman", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.threadCheckBox.Location = new System.Drawing.Point(2, 450);
+            this.threadCheckBox.Name = "threadCheckBox";
+            this.threadCheckBox.Size = new System.Drawing.Size(255, 25);
+            this.threadCheckBox.TabIndex = 23;
+            this.threadCheckBox.Text = "Multithreading dividing picture";
+            this.threadCheckBox.UseVisualStyleBackColor = true;
+            this.threadCheckBox.CheckedChanged += new System.EventHandler(this.threadCheckBox_CheckedChanged);
+            // 
+            // threadNumericUpDown
+            // 
+            this.threadNumericUpDown.Location = new System.Drawing.Point(272, 450);
+            this.threadNumericUpDown.Maximum = new decimal(new int[] {
+            9,
+            0,
+            0,
+            0});
+            this.threadNumericUpDown.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.threadNumericUpDown.Name = "threadNumericUpDown";
+            this.threadNumericUpDown.Size = new System.Drawing.Size(90, 20);
+            this.threadNumericUpDown.TabIndex = 24;
+            this.threadNumericUpDown.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
             // EncryptionScreen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.InactiveCaption;
             this.ClientSize = new System.Drawing.Size(902, 592);
+            this.Controls.Add(this.threadNumericUpDown);
+            this.Controls.Add(this.threadCheckBox);
             this.Controls.Add(this.saveKeysButton);
             this.Controls.Add(this.timeLabel);
             this.Controls.Add(this.label1);
@@ -281,6 +320,7 @@
             this.MinimumSize = new System.Drawing.Size(918, 630);
             this.Name = "EncryptionScreen";
             ((System.ComponentModel.ISupportInitialize)(this.Image1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.threadNumericUpDown)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -307,6 +347,8 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label timeLabel;
         private System.Windows.Forms.Button saveKeysButton;
+        private System.Windows.Forms.CheckBox threadCheckBox;
+        private System.Windows.Forms.NumericUpDown threadNumericUpDown;
     }
 }
 

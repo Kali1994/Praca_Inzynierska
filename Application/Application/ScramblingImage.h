@@ -21,6 +21,9 @@ public:
 	Pixel* scramblingPixels(int, int, int);
 	Pixel* descramblingPixels(int, int, int);
 
+	Pixel* threadScramblingPixels(int, int, int, int, int, int, int);
+	Pixel* threadDescramblingPixels(int, int, int, int, int, int, int);
+
 	bool loadImage(std::string path);
 	void saveImage(std::string path);
 
