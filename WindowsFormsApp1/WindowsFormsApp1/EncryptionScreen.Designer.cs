@@ -67,7 +67,7 @@
             // 
             // loadButton
             // 
-            this.loadButton.Location = new System.Drawing.Point(123, 99);
+            this.loadButton.Location = new System.Drawing.Point(123, 84);
             this.loadButton.Name = "loadButton";
             this.loadButton.Size = new System.Drawing.Size(135, 40);
             this.loadButton.TabIndex = 2;
@@ -128,7 +128,7 @@
             // 
             this.VisualisationCheckBox.AutoSize = true;
             this.VisualisationCheckBox.Font = new System.Drawing.Font("Times New Roman", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.VisualisationCheckBox.Location = new System.Drawing.Point(2, 418);
+            this.VisualisationCheckBox.Location = new System.Drawing.Point(2, 391);
             this.VisualisationCheckBox.Name = "VisualisationCheckBox";
             this.VisualisationCheckBox.Size = new System.Drawing.Size(122, 25);
             this.VisualisationCheckBox.TabIndex = 9;
@@ -150,7 +150,7 @@
             // 
             // GenerationButton
             // 
-            this.GenerationButton.Location = new System.Drawing.Point(123, 218);
+            this.GenerationButton.Location = new System.Drawing.Point(123, 201);
             this.GenerationButton.Name = "GenerationButton";
             this.GenerationButton.Size = new System.Drawing.Size(135, 40);
             this.GenerationButton.TabIndex = 12;
@@ -162,7 +162,7 @@
             // 
             this.Key1label.AutoSize = true;
             this.Key1label.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Key1label.Location = new System.Drawing.Point(-2, 284);
+            this.Key1label.Location = new System.Drawing.Point(-4, 253);
             this.Key1label.MinimumSize = new System.Drawing.Size(55, 30);
             this.Key1label.Name = "Key1label";
             this.Key1label.Size = new System.Drawing.Size(55, 30);
@@ -174,7 +174,7 @@
             // 
             this.Key2Label.AutoSize = true;
             this.Key2Label.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Key2Label.Location = new System.Drawing.Point(-2, 321);
+            this.Key2Label.Location = new System.Drawing.Point(-2, 301);
             this.Key2Label.MinimumSize = new System.Drawing.Size(55, 30);
             this.Key2Label.Name = "Key2Label";
             this.Key2Label.Size = new System.Drawing.Size(55, 30);
@@ -185,11 +185,11 @@
             // LoadPathTextBox
             // 
             this.LoadPathTextBox.Font = new System.Drawing.Font("Times New Roman", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LoadPathTextBox.Location = new System.Drawing.Point(2, 166);
+            this.LoadPathTextBox.Location = new System.Drawing.Point(2, 145);
             this.LoadPathTextBox.MinimumSize = new System.Drawing.Size(360, 40);
             this.LoadPathTextBox.Name = "LoadPathTextBox";
             this.LoadPathTextBox.ReadOnly = true;
-            this.LoadPathTextBox.Size = new System.Drawing.Size(360, 29);
+            this.LoadPathTextBox.Size = new System.Drawing.Size(360, 40);
             this.LoadPathTextBox.TabIndex = 17;
             // 
             // Image1
@@ -207,21 +207,21 @@
             // FirstKeyTextBox
             // 
             this.FirstKeyTextBox.Font = new System.Drawing.Font("Times New Roman", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.FirstKeyTextBox.Location = new System.Drawing.Point(57, 282);
+            this.FirstKeyTextBox.Location = new System.Drawing.Point(57, 253);
             this.FirstKeyTextBox.MinimumSize = new System.Drawing.Size(305, 30);
             this.FirstKeyTextBox.Name = "FirstKeyTextBox";
             this.FirstKeyTextBox.ReadOnly = true;
-            this.FirstKeyTextBox.Size = new System.Drawing.Size(305, 29);
+            this.FirstKeyTextBox.Size = new System.Drawing.Size(305, 30);
             this.FirstKeyTextBox.TabIndex = 18;
             // 
             // SecondKeyTextBox
             // 
             this.SecondKeyTextBox.Font = new System.Drawing.Font("Times New Roman", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SecondKeyTextBox.Location = new System.Drawing.Point(57, 321);
+            this.SecondKeyTextBox.Location = new System.Drawing.Point(57, 301);
             this.SecondKeyTextBox.MinimumSize = new System.Drawing.Size(305, 30);
             this.SecondKeyTextBox.Name = "SecondKeyTextBox";
             this.SecondKeyTextBox.ReadOnly = true;
-            this.SecondKeyTextBox.Size = new System.Drawing.Size(305, 29);
+            this.SecondKeyTextBox.Size = new System.Drawing.Size(305, 30);
             this.SecondKeyTextBox.TabIndex = 19;
             // 
             // label1
@@ -246,7 +246,7 @@
             // 
             // saveKeysButton
             // 
-            this.saveKeysButton.Location = new System.Drawing.Point(227, 366);
+            this.saveKeysButton.Location = new System.Drawing.Point(227, 337);
             this.saveKeysButton.MinimumSize = new System.Drawing.Size(135, 40);
             this.saveKeysButton.Name = "saveKeysButton";
             this.saveKeysButton.Size = new System.Drawing.Size(135, 40);
@@ -259,17 +259,17 @@
             // 
             this.threadCheckBox.AutoSize = true;
             this.threadCheckBox.Font = new System.Drawing.Font("Times New Roman", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.threadCheckBox.Location = new System.Drawing.Point(2, 450);
+            this.threadCheckBox.Location = new System.Drawing.Point(2, 422);
             this.threadCheckBox.Name = "threadCheckBox";
-            this.threadCheckBox.Size = new System.Drawing.Size(255, 25);
+            this.threadCheckBox.Size = new System.Drawing.Size(276, 25);
             this.threadCheckBox.TabIndex = 23;
-            this.threadCheckBox.Text = "Multithreading dividing picture";
+            this.threadCheckBox.Text = "Dividing picture, Number threads";
             this.threadCheckBox.UseVisualStyleBackColor = true;
             this.threadCheckBox.CheckedChanged += new System.EventHandler(this.threadCheckBox_CheckedChanged);
             // 
             // threadNumericUpDown
             // 
-            this.threadNumericUpDown.Location = new System.Drawing.Point(272, 450);
+            this.threadNumericUpDown.Location = new System.Drawing.Point(284, 422);
             this.threadNumericUpDown.Maximum = new decimal(new int[] {
             9,
             0,

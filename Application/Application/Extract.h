@@ -7,7 +7,8 @@ class Extract: public BitOperation
 public:
 	Extract();
 
-	void vGenerateKnightRules(uint8_t, uint8_t);
+	void generateKnightRules(uint8_t, uint8_t);
+	int **generateRules(uint8_t, uint8_t);
 
 	~Extract();
 protected:

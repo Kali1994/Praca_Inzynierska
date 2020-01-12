@@ -132,32 +132,7 @@ namespace WindowsFormsApp1
                 {
                     for (int j = param.endY - 1; j >= param.startY; j--)
                     {
-
-                        AlgorithmWrapper.WrapperPixels pixel = cppClass.threadDescramblingPixels(i, j, k, 0, 0, 0, 0);
-
-                        Color first = Color.FromArgb(pixel.fR, pixel.fG, pixel.fB);
-                        Color second = Color.FromArgb(pixel.sR, pixel.sG, pixel.sB); ;
-                        Color third = Color.FromArgb(pixel.tR, pixel.tG, pixel.tB); ;
-
-                        if (VisualisationCheckBox.Checked)
-                        {
-                            if (Image1.InvokeRequired)
-                            {
-                                Image1.Invoke(new MethodInvoker(
-                                delegate ()
-                                {
-                                    bitmap.SetPixel(pixel.fposY, pixel.fposX, first);
-                                    bitmap.SetPixel(pixel.sposY, pixel.sposX, second);
-                                    bitmap.SetPixel(pixel.tposY, pixel.tposX, third);
-                                }));
-                            }
-                        }
-                        else
-                        {
-                            bitmap.SetPixel(pixel.fposY, pixel.fposX, first);
-                            bitmap.SetPixel(pixel.sposY, pixel.sposX, second);
-                            bitmap.SetPixel(pixel.tposY, pixel.tposX, third);
-                        }
+                        AlgorithmWrapper.WrapperPixels pixel = cppClass.threadDescramblingPixels(i, j, k, param.startX, param.endX, param.startY, param.endY);
 
                         mutProgress.WaitOne();
                         if (timeLabel.InvokeRequired)
@@ -173,15 +148,6 @@ namespace WindowsFormsApp1
 
                         Progress();
                         mutProgress.ReleaseMutex();
-                    }
-
-                    if (VisualisationCheckBox.Checked)
-                    {
-                        if (Image1.InvokeRequired)
-                        {
-                            Image1.Invoke(new MethodInvoker(
-                            delegate () { Image1.Image = bitmap; }));
-                        }
                     }
                 }
             }
@@ -204,23 +170,52 @@ namespace WindowsFormsApp1
 
             if (threadCheckBox.Checked)
             {
-                int fieldX = (bitmap.Height / 3);
-                int fieldY = (bitmap.Width / 3);
+                int numberThreads = Convert.ToInt32(Math.Round(threadNumericUpDown.Value, 0));
+                int currentThread = 0;
 
-                Thread[] threads = new Thread[9];
+                Thread[] threads = new Thread[numberThreads];
+
+                int startX = 0, startY = 0;
+                int endX = 0, endY = 0;
 
                 for (int i = 0; i < 3; i++)
                 {
                     for (int j = 0; j < 3; j++)
                     {
-                        threads[(i * 3) + j] = new Thread(new ParameterizedThreadStart(this.threadDescramblingPixels));
-                        threads[(i * 3) + j].Start(new ThreadParameters(fieldX * i, fieldX * (i + 1), fieldY * j, fieldY * (j + 1)));
+                        threads[currentThread] = new Thread(new ParameterizedThreadStart(this.threadDescramblingPixels));
+                        getXandY(ref startX, ref startY, ref endX, ref endY, i, j);
+                        threads[currentThread].Start(new ThreadParameters(startX, endX, startY, endY));
+
+                        if (currentThread == numberThreads - 1)
+                        {
+                            for (int k = 0; k < numberThreads - 1; k++)
+                            {
+                                threads[k].Join();
+                            }
+                            currentThread %= numberThreads - 1;
+                        }
+                        else if (i == 2 && j == 2)
+                        {
+                            for (int x = 0; x < currentThread + 1; x++)
+                            {
+                                threads[x].Join();
+                            }
+                        }
+                        else
+                        {
+                            currentThread++;
+                        }
                     }
                 }
 
-                for (int i = 0; i < 9; i++)
+                for (int i = 0; i <bitmap.Height; i++)
                 {
-                    threads[i].Join();
+                    for (int j = 0; j < bitmap.Width; j++ )
+                    {
+                        AlgorithmWrapper.WrapperPixel pixel = cppClass.getPixel(i, j);
+                        Color color = Color.FromArgb(pixel.R, pixel.G, pixel.B);
+                        bitmap.SetPixel(j, i, color);
+                    }
                 }
             }
             else
@@ -364,14 +359,23 @@ namespace WindowsFormsApp1
         {
             if (VisualisationCheckBox.Checked)
             {
-                if (MessageBox.Show("Visualisation will delay decryption. Are you sure you want to check this option ?", "Information", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+                if (MessageBox.Show("Visualisation will delay decryption and canot be used with threading type. Are you sure you want to check this option ?", "Information", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
                 {
                     VisualisationCheckBox.Checked = true;
+                    threadCheckBox.Checked = false;
+                    threadCheckBox.Enabled = false;
+                    threadNumericUpDown.Value = 1;
+                    threadNumericUpDown.Enabled = false;
                 }
                 else
                 {
                     VisualisationCheckBox.Checked = false;
+                    threadCheckBox.Enabled = true;
                 }
+            }
+            else
+            {
+                threadCheckBox.Enabled = true;
             }
         }
 
@@ -445,6 +449,39 @@ namespace WindowsFormsApp1
             }
         }
 
+        private void getXandY(ref int startX, ref int startY, ref int endX, ref int endY, int i, int j)
+        {
+            int fieldX = (bitmap.Height / 3);
+            int fieldY = (bitmap.Width / 3);
+
+            int restX = (bitmap.Height % 3);
+            int restY = (bitmap.Width % 3);
+
+            startX = fieldX * i;
+            startY = fieldY * j;
+
+            if (i == 2 && j == 2)
+            {
+                endX = (fieldX * (i + 1)) + restX;
+                endY = (fieldY * (j + 1)) + restY;
+            }
+            else if (i == 2 && j != 2)
+            {
+                endX = (fieldX * (i + 1)) + restX;
+                endY = (fieldY * (j + 1));
+            }
+            else if (i != 2 && j == 2)
+            {
+                endX = (fieldX * (i + 1));
+                endY = (fieldY * (j + 1)) + restY;
+            }
+            else
+            {
+                endX = fieldX * (i + 1);
+                endY = fieldY * (j + 1);
+            }
+        }
+
         private void threadCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             Bitmap picture = new Bitmap(imageLocation);
@@ -454,6 +491,8 @@ namespace WindowsFormsApp1
                 {
                     threadCheckBox.Checked = true;
                     threadNumericUpDown.Enabled = true;
+                    VisualisationCheckBox.Checked = false;
+                    VisualisationCheckBox.Enabled = false;
                 }
                 else
                 {

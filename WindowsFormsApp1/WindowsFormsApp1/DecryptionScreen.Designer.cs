@@ -262,9 +262,9 @@
             this.threadCheckBox.Font = new System.Drawing.Font("Times New Roman", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.threadCheckBox.Location = new System.Drawing.Point(2, 427);
             this.threadCheckBox.Name = "threadCheckBox";
-            this.threadCheckBox.Size = new System.Drawing.Size(255, 25);
+            this.threadCheckBox.Size = new System.Drawing.Size(276, 25);
             this.threadCheckBox.TabIndex = 24;
-            this.threadCheckBox.Text = "Multithreading dividing picture";
+            this.threadCheckBox.Text = "Dividing picture, Number threads";
             this.threadCheckBox.UseVisualStyleBackColor = true;
             this.threadCheckBox.CheckedChanged += new System.EventHandler(this.threadCheckBox_CheckedChanged);
             // 

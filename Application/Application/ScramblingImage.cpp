@@ -19,7 +19,7 @@ Pixel* ScramblingImage::scramblingPixels(int i, int j, int k)
 	pixels[0].posX = i;
 	pixels[0].posY = j;
 
-	m_encryption.vGenerateKnightRules(m_scrambler.getValueKMR(i, j, k), m_scrambler.getValueRNS(i, j, k));
+	m_encryption.generateKnightRules(m_scrambler.getValueKMR(i, j, k), m_scrambler.getValueRNS(i, j, k));
 
 	AImage = m_encryption.computingLimitsOnScrambling(i, j, 0, pixels[1]);
 	BImage = m_encryption.computingLimitsOnScrambling(i, j, 1, pixels[2]);
@@ -39,7 +39,7 @@ Pixel* ScramblingImage::descramblingPixels(int i, int j, int k)
 	pixels[0].posX = i;
 	pixels[0].posY = j;
 
-	m_encryption.vGenerateKnightRules(m_scrambler.getValueKMR(i, j, k), m_scrambler.getValueRNS(i, j, k));
+	m_encryption.generateKnightRules(m_scrambler.getValueKMR(i, j, k), m_scrambler.getValueRNS(i, j, k));
 
 	AImage = m_encryption.computingLimitsOnScrambling(i, j, 0, pixels[1]);
 	BImage = m_encryption.computingLimitsOnScrambling(i, j, 1, pixels[2]);
@@ -61,14 +61,20 @@ Pixel* ScramblingImage::threadScramblingPixels(int i, int j, int k, int startX, 
 
 	DividedImage image(startX, endX, startY, endY);
 
-	m_encryption.vGenerateKnightRules(m_scrambler.getValueKMR(i, j, k), m_scrambler.getValueRNS(i, j, k));
-				
-	AImage = m_encryption.threadComputingLimitsOnScrambling(i, j, 0, pixels[1], image);
-	BImage = m_encryption.threadComputingLimitsOnScrambling(i, j, 1, pixels[2], image);
+	int** rules = m_encryption.generateRules(m_scrambler.getValueKMR(i, j, k), m_scrambler.getValueRNS(i, j, k));
+	int posX, posY;
 
-	m_encryption.transposingPixelColor(AImage, BImage, i, j, k);
+	AImage = m_encryption.threadComputingLimitsOnScrambling(i, j, posX, posY, 0, rules, pixels[1], image);
+	BImage = m_encryption.threadComputingLimitsOnScrambling(posX, posY, posX, posY, 1, rules, pixels[2], image);
+
+	m_encryption.threadTransposingPixelColor(AImage, BImage, i, j, k, rules);
 	setPixelsValue(pixels);
 
+	for (int i = 0; i < 2; i++){
+		delete[] rules[i];
+	}
+	delete[] rules;
+	
 	return pixels;
 }
 
@@ -83,15 +89,35 @@ Pixel* ScramblingImage::threadDescramblingPixels(int i, int j, int k, int startX
 
 	DividedImage image(startX, endX, startY, endY);
 
-	m_encryption.vGenerateKnightRules(m_scrambler.getValueKMR(i, j, k), m_scrambler.getValueRNS(i, j, k));
+	int** rules = m_encryption.generateRules(m_scrambler.getValueKMR(i, j, k), m_scrambler.getValueRNS(i, j, k));
+	int posX, posY;
 
-	AImage = m_encryption.threadComputingLimitsOnScrambling(i, j, 0, pixels[1], image);
-	BImage = m_encryption.threadComputingLimitsOnScrambling(i, j, 1, pixels[2], image);
+	AImage = m_encryption.threadComputingLimitsOnScrambling(i, j, posX, posY, 0, rules, pixels[1], image);
+	BImage = m_encryption.threadComputingLimitsOnScrambling(posX, posY, posX, posY, 1, rules, pixels[2], image);
 
-	m_encryption.transposingPixelColorDescrambling(AImage, BImage, i, j, k);
+	m_encryption.threadTransposingPixelColorDescrambling(AImage, BImage, i, j, k, rules);
 	setPixelsValue(pixels);
 
+	for (int i = 0; i < 2; i++) {
+		delete[] rules[i];
+	}
+	delete[] rules;
+
 	return pixels;
+}
+
+Pixel * ScramblingImage::getPixel(int posX, int posY)
+{
+	static Pixel* getPixel = new Pixel();
+	uint8_t* value = m_picture.getRGBValueOfPixel(posX, posY);
+
+	getPixel->posX = posX;
+	getPixel->posY = posY;
+	getPixel->R = value[0];
+	getPixel->G = value[1];
+	getPixel->B = value[2];
+
+	return getPixel;
 }
 
 bool ScramblingImage::loadImage(std::string path)
@@ -105,7 +131,6 @@ bool ScramblingImage::loadImage(std::string path)
 	}
 
 	return false;
-
 }
 
 void ScramblingImage::saveImage(std::string path)
@@ -147,8 +172,7 @@ double* ScramblingImage::computeChaoticMap(double key, bool controlParam)
 
 ScramblingImage::~ScramblingImage()
 {
-	//delete m_piPRGB;
-	//delete m_piENC;
+
 }
 
 void ScramblingImage::setPixelsValue(Pixel* pixels)
