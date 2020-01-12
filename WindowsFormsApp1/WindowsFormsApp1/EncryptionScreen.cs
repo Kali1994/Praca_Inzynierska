@@ -456,6 +456,7 @@ namespace WindowsFormsApp1
             {
                 threadNumericUpDown.Value = 1;
                 threadNumericUpDown.Enabled = false;
+                VisualisationCheckBox.Enabled = true;
             }
         }
 
