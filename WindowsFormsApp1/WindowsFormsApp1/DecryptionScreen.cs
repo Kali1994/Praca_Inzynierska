@@ -163,6 +163,7 @@ namespace WindowsFormsApp1
             }
 
             bitmap = new Bitmap(imageLocation);
+            percentage = 0;
             numberCount = bitmap.Width * bitmap.Height * 3;
 
             timer = new Stopwatch();
