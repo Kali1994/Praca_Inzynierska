@@ -120,6 +120,12 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SpinBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="SpinBox.Designer.cs">
+      <DependentUpon>SpinBox.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="DecryptionScreen.resx">
       <DependentUpon>DecryptionScreen.cs</DependentUpon>
     </EmbeddedResource>

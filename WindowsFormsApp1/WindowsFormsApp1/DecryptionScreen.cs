@@ -15,7 +15,7 @@ namespace WindowsFormsApp1
     public partial class DecryptionScreen : Form
     {
         AlgorithmWrapper.WrapperClass cppClass = new AlgorithmWrapper.WrapperClass();
-        Form messageForm = new MessageForm("Preparing rules.  Please Wait");
+        Form messageForm = new MessageForm("Preparing rules. Please Wait");
         Form messageKeys = new MessageForm("Generating keys. Please Wait");
 
         Bitmap bitmap;
@@ -27,6 +27,8 @@ namespace WindowsFormsApp1
         Stopwatch timer;
         int percentage = 0;
         int numberCount;
+ 
+        bool decryptionThreads = false;
 
         private static Mutex mutProgress = new Mutex();
 
@@ -172,30 +174,34 @@ namespace WindowsFormsApp1
             if (threadCheckBox.Checked)
             {
                 int numberThreads = Convert.ToInt32(Math.Round(threadNumericUpDown.Value, 0));
+                int pieces = Convert.ToInt32(Math.Round(threadNumericUpDown.Maximum, 0));
                 int currentThread = 0;
 
                 Thread[] threads = new Thread[numberThreads];
 
+                int piecesI = 0, piecesJ = 0;
+                getFromPieces(ref piecesI, ref piecesJ, pieces);
+
                 int startX = 0, startY = 0;
                 int endX = 0, endY = 0;
 
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < piecesI; i++)
                 {
-                    for (int j = 0; j < 3; j++)
+                    for (int j = 0; j < piecesJ; j++)
                     {
                         threads[currentThread] = new Thread(new ParameterizedThreadStart(this.threadDescramblingPixels));
-                        getXandY(ref startX, ref startY, ref endX, ref endY, i, j);
+                        getXandY(ref startX, ref startY, ref endX, ref endY, i, j, piecesI, piecesJ);
                         threads[currentThread].Start(new ThreadParameters(startX, endX, startY, endY));
 
                         if (currentThread == numberThreads - 1)
                         {
-                            for (int k = 0; k < numberThreads - 1; k++)
+                            for (int k = 0; k < numberThreads; k++)
                             {
                                 threads[k].Join();
                             }
-                            currentThread %= numberThreads - 1;
+                            currentThread = 0;
                         }
-                        else if (i == 2 && j == 2)
+                        else if (i == piecesI - 1 && j == piecesJ - 1)
                         {
                             for (int x = 0; x < currentThread + 1; x++)
                             {
@@ -272,12 +278,11 @@ namespace WindowsFormsApp1
 
             if (messageForm.IsDisposed)
             {
-                messageForm = new MessageForm("Preparing rules.  Please Wait");
+                messageForm = new MessageForm("Preparing rules. Please Wait");
 
             }
-            messageForm.Show(this);
-            
 
+            messageForm.Show(this);
             backgroundWorker1.RunWorkerAsync();
         }
 
@@ -317,6 +322,25 @@ namespace WindowsFormsApp1
                     VisualisationCheckBox.Checked = false;
                     VisualisationCheckBox.Enabled = false;
                     threadCheckBox.Checked = false;
+                    decryptionThreads = false;
+
+                    string fileName = System.IO.Path.GetFileNameWithoutExtension(dialog.FileName);
+                    int index = fileName.LastIndexOf('_');
+
+                    if (index != -1)
+                    {
+                        int number;
+                        if (Int32.TryParse(fileName.Substring(index + 1), out number))
+                        {
+                            if (16 >= number && 0 <= number)
+                            {
+                                threadCheckBox.Checked = true;
+                                decryptionThreads = true;
+                                threadNumericUpDown.Maximum = number;
+                            }
+                        }
+                    }
+
                     threadCheckBox.Enabled = false;
                     threadNumericUpDown.Value = 1;
                     threadNumericUpDown.Enabled = false;
@@ -360,23 +384,14 @@ namespace WindowsFormsApp1
         {
             if (VisualisationCheckBox.Checked)
             {
-                if (MessageBox.Show("Visualisation will delay decryption and canot be used with threading type. Are you sure you want to check this option ?", "Information", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+                if (MessageBox.Show("Visualisation will delay decryption. Are you sure you want to check this option ?", "Information", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
                 {
                     VisualisationCheckBox.Checked = true;
-                    threadCheckBox.Checked = false;
-                    threadCheckBox.Enabled = false;
-                    threadNumericUpDown.Value = 1;
-                    threadNumericUpDown.Enabled = false;
                 }
                 else
                 {
                     VisualisationCheckBox.Checked = false;
-                    threadCheckBox.Enabled = true;
                 }
-            }
-            else
-            {
-                threadCheckBox.Enabled = true;
             }
         }
 
@@ -394,10 +409,14 @@ namespace WindowsFormsApp1
 
             button1.Enabled = false;
             EncryptButton.Enabled = true;
-            VisualisationCheckBox.Enabled = true;
             FirstKeyTextBox.ReadOnly = true;
             SecondKeyTextBox.ReadOnly = true;
-            threadCheckBox.Enabled = true;
+
+            if (!decryptionThreads) { 
+                VisualisationCheckBox.Enabled = true;
+            } else {
+                threadNumericUpDown.Enabled = true;
+            }
 
             firstKey = Convert.ToDouble(FirstKeyTextBox.Text);
             secondKey = Convert.ToDouble(SecondKeyTextBox.Text);
@@ -450,28 +469,28 @@ namespace WindowsFormsApp1
             }
         }
 
-        private void getXandY(ref int startX, ref int startY, ref int endX, ref int endY, int i, int j)
+        private void getXandY(ref int startX, ref int startY, ref int endX, ref int endY, int i, int j, int piecesI, int piecesJ)
         {
-            int fieldX = (bitmap.Height / 3);
-            int fieldY = (bitmap.Width / 3);
+            int fieldX = (bitmap.Height / piecesI);
+            int fieldY = (bitmap.Width / piecesJ);
 
-            int restX = (bitmap.Height % 3);
-            int restY = (bitmap.Width % 3);
+            int restX = (bitmap.Height % piecesI);
+            int restY = (bitmap.Width % piecesJ);
 
             startX = fieldX * i;
             startY = fieldY * j;
 
-            if (i == 2 && j == 2)
+            if (i == piecesI - 1 && j == piecesJ - 1)
             {
                 endX = (fieldX * (i + 1)) + restX;
                 endY = (fieldY * (j + 1)) + restY;
             }
-            else if (i == 2 && j != 2)
+            else if (i == piecesI - 1 && j != piecesJ - 1)
             {
                 endX = (fieldX * (i + 1)) + restX;
                 endY = (fieldY * (j + 1));
             }
-            else if (i != 2 && j == 2)
+            else if (i != piecesI - 1 && j == piecesJ - 1)
             {
                 endX = (fieldX * (i + 1));
                 endY = (fieldY * (j + 1)) + restY;
@@ -483,29 +502,27 @@ namespace WindowsFormsApp1
             }
         }
 
-        private void threadCheckBox_CheckedChanged(object sender, EventArgs e)
+        private void getFromPieces(ref int piecesI, ref int piecesJ, int pieces)
         {
-            Bitmap picture = new Bitmap(imageLocation);
-            if (threadCheckBox.Checked)
+            if (pieces == 2)
             {
-                if (50 < picture.Height && 50 < picture.Width)
-                {
-                    threadCheckBox.Checked = true;
-                    threadNumericUpDown.Enabled = true;
-                    VisualisationCheckBox.Checked = false;
-                    VisualisationCheckBox.Enabled = false;
-                }
-                else
-                {
-                    MessageBox.Show("Picture is too small for this option", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    threadCheckBox.Checked = false;
-                }
+                piecesI = 2;
+                piecesJ = 1;
+            }
+            else if (pieces == 4)
+            {
+                piecesI = 2;
+                piecesJ = 2;
+            }
+            else if (pieces == 9)
+            {
+                piecesI = 3;
+                piecesJ = 3;
             }
             else
             {
-                threadNumericUpDown.Value = 1;
-                threadNumericUpDown.Enabled = false;
-                VisualisationCheckBox.Enabled = true;
+                piecesI = 4;
+                piecesJ = 4;
             }
         }
     }

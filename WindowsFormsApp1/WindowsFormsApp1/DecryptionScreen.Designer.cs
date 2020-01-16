@@ -266,13 +266,12 @@
             this.threadCheckBox.TabIndex = 24;
             this.threadCheckBox.Text = "Dividing picture, Number threads";
             this.threadCheckBox.UseVisualStyleBackColor = true;
-            this.threadCheckBox.CheckedChanged += new System.EventHandler(this.threadCheckBox_CheckedChanged);
             // 
             // threadNumericUpDown
             // 
             this.threadNumericUpDown.Location = new System.Drawing.Point(293, 427);
             this.threadNumericUpDown.Maximum = new decimal(new int[] {
-            9,
+            16,
             0,
             0,
             0});

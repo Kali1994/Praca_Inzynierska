@@ -18,7 +18,7 @@ namespace WindowsFormsApp1
         AlgorithmWrapper.WrapperClass cppClass = new AlgorithmWrapper.WrapperClass();
         Form messageForm = new MessageForm("Preparing rules.  Please Wait");
         Form messageKeys = new MessageForm("Generating keys. Please Wait");
-
+        SpinBox spinBox;
         Bitmap bitmap;
         String imageLocation = "";
 
@@ -44,6 +44,13 @@ namespace WindowsFormsApp1
             VisualisationCheckBox.Enabled = false;
             threadCheckBox.Enabled = false;
             threadNumericUpDown.Enabled = false;
+            spinBox = new SpinBox(ref threadNumericUpDown);
+            spinBox.Bounds = new Rectangle(272, 425, 90, 20);
+            this.Controls.Add(spinBox);
+            spinBox.Enabled = false;
+            spinBox.setValue(2);
+            NumberThreadLabel.Enabled = false;
+            numberPiecesLabel.Enabled = false;
 
             // To report progress from the background worker we need to set this property
             backgroundWorker1.WorkerReportsProgress = true;
@@ -170,19 +177,23 @@ namespace WindowsFormsApp1
             if (threadCheckBox.Checked)
             {
                 int numberThreads = Convert.ToInt32(Math.Round(threadNumericUpDown.Value, 0));
+                int pieces = Convert.ToInt32(Math.Round(spinBox.Value, 0));
                 int currentThread = 0;
 
                 Thread[] threads = new Thread[numberThreads];
 
+                int piecesI = 0, piecesJ = 0;
+                getFromPieces(ref piecesI, ref piecesJ, pieces);
+
                 int startX = 0, startY = 0;
                 int endX = 0, endY = 0;
 
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < piecesI; i++)
                 {
-                    for (int j = 0; j < 3; j++)
+                    for (int j = 0; j < piecesJ; j++)
                     {
                         threads[currentThread] = new Thread(new ParameterizedThreadStart(this.threadScramblingPixels));
-                        getXandY(ref startX, ref startY, ref endX, ref endY, i, j);
+                        getXandY(ref startX, ref startY, ref endX, ref endY, i, j, piecesI, piecesJ);
                         threads[currentThread].Start(new ThreadParameters(startX, endX, startY, endY));
 
                         if (currentThread == numberThreads - 1)
@@ -193,7 +204,7 @@ namespace WindowsFormsApp1
                             }
                             currentThread = 0;
                         }
-                        else if(i == 2 && j == 2)
+                        else if (i == piecesI - 1 && j == piecesJ - 1)
                         {
                             for (int x = 0; x < currentThread + 1; x++)
                             {
@@ -276,6 +287,9 @@ namespace WindowsFormsApp1
             saveKeysButton.Enabled = false;
             threadCheckBox.Enabled = false;
             threadNumericUpDown.Enabled = false;
+            spinBox.Enabled = false;
+            NumberThreadLabel.Enabled = false;
+            numberPiecesLabel.Enabled = false;
 
             if (messageForm.IsDisposed)
             {
@@ -326,6 +340,8 @@ namespace WindowsFormsApp1
                     threadCheckBox.Enabled = false;
                     threadNumericUpDown.Value = 1;
                     threadNumericUpDown.Enabled = false;
+                    Bitmap tempBitmap = new Bitmap(imageLocation);
+                    spinBox.setImageSize(tempBitmap.Height, tempBitmap.Width);
                 }
                 else
                 {
@@ -349,7 +365,15 @@ namespace WindowsFormsApp1
 
             if (dialog.ShowDialog() == DialogResult.OK)
             {
-                byte[] bytes = Encoding.ASCII.GetBytes(dialog.FileName);
+                byte[] bytes;
+                if (threadCheckBox.Checked)
+                {
+                    bytes = Encoding.ASCII.GetBytes(Path.GetDirectoryName(dialog.FileName) + "/" + System.IO.Path.GetFileNameWithoutExtension(dialog.FileName) + "_" + spinBox.Value.ToString() + ".png");
+                }
+                else
+                {
+                    bytes = Encoding.ASCII.GetBytes(dialog.FileName);
+                }
 
                 unsafe
                 {
@@ -440,10 +464,13 @@ namespace WindowsFormsApp1
             Bitmap picture = new Bitmap(imageLocation);
             if (threadCheckBox.Checked)
             {
-                if (50 < picture.Height && 50 < picture.Width)
+                if (20 <= picture.Height && 20 <= picture.Width)
                 {
                     threadCheckBox.Checked = true;
                     threadNumericUpDown.Enabled = true;
+                    spinBox.Enabled = true;
+                    NumberThreadLabel.Enabled = true;
+                    numberPiecesLabel.Enabled = true;
                     VisualisationCheckBox.Checked = false;
                     VisualisationCheckBox.Enabled = false;
                 }
@@ -457,32 +484,36 @@ namespace WindowsFormsApp1
             {
                 threadNumericUpDown.Value = 1;
                 threadNumericUpDown.Enabled = false;
+                spinBox.Enabled = false;
+                NumberThreadLabel.Enabled = false;
+                numberPiecesLabel.Enabled = false;
+                spinBox.setValue(2);
                 VisualisationCheckBox.Enabled = true;
             }
         }
 
-        private void getXandY(ref int startX, ref int startY, ref int endX, ref int endY, int i, int j)
+        private void getXandY(ref int startX, ref int startY, ref int endX, ref int endY, int i, int j, int piecesI, int piecesJ)
         {
-            int fieldX = (bitmap.Height / 3);
-            int fieldY = (bitmap.Width / 3);
+            int fieldX = (bitmap.Height / piecesI);
+            int fieldY = (bitmap.Width / piecesJ);
 
-            int restX = (bitmap.Height % 3);
-            int restY = (bitmap.Width % 3);
+            int restX = (bitmap.Height % piecesI);
+            int restY = (bitmap.Width % piecesJ);
 
             startX = fieldX * i;
             startY = fieldY * j;
 
-            if (i == 2 && j == 2)
+            if (i == piecesI - 1 && j == piecesJ - 1)
             {
                 endX = (fieldX * (i + 1)) + restX;
                 endY = (fieldY * (j + 1)) + restY;
             }
-            else if (i == 2 && j != 2)
+            else if (i == piecesI - 1 && j != piecesJ - 1)
             {
                 endX = (fieldX * (i + 1)) + restX;
                 endY = (fieldY * (j + 1));
             }
-            else if (i != 2 && j == 2)
+            else if (i != piecesI - 1 && j == piecesJ - 1)
             {
                 endX = (fieldX * (i + 1));
                 endY = (fieldY * (j + 1)) + restY;
@@ -491,6 +522,38 @@ namespace WindowsFormsApp1
             {
                 endX = fieldX * (i + 1);
                 endY = fieldY * (j + 1);
+            }
+        }
+        private void getFromPieces(ref int piecesI, ref int piecesJ, int pieces)
+        {
+            if (pieces == 2)
+            {
+                piecesI = 2;
+                piecesJ = 1;
+            }
+            else if (pieces == 4)
+            {
+                piecesI = 2;
+                piecesJ = 2;
+            }
+            else if (pieces == 9)
+            {
+                piecesI = 3;
+                piecesJ = 3;
+            }
+            else
+            {
+                piecesI = 4;
+                piecesJ = 4;
+            }
+        }
+
+        private void threadNumericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            if (threadNumericUpDown.Value > spinBox.Value)
+            {
+                MessageBox.Show("Number Threads can't be higher than pieces", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                threadNumericUpDown.Value = threadNumericUpDown.Value - 1;
             }
         }
     }

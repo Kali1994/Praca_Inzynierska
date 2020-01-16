@@ -121,12 +121,6 @@
   <data name="No-Image" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\bin\No-Image.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="noImage" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\bin\noImage.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="No-Image-Icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\bin\No-Image-Icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="logo" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\bin\logo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
