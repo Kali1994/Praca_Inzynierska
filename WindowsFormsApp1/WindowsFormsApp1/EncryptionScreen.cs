@@ -541,10 +541,15 @@ namespace WindowsFormsApp1
                 piecesI = 3;
                 piecesJ = 3;
             }
-            else
+            else if (pieces == 16)
             {
                 piecesI = 4;
                 piecesJ = 4;
+            }
+            else if (pieces == 25)
+            {
+                piecesI = 5;
+                piecesJ = 5;
             }
         }
 

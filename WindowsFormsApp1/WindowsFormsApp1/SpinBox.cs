@@ -75,7 +75,7 @@ namespace WindowsFormsApp1
 
         private IEnumerable<decimal> GetPossibleValues()
         {
-            foreach (var value in new decimal[] { 2, 4, 9, 16 })
+            foreach (var value in new decimal[] { 2, 4, 9, 16, 25 })
             {
                 yield return value;
             }
@@ -102,6 +102,11 @@ namespace WindowsFormsApp1
             {
                 Value = value;
                 currentIndex = 3;
+            }
+            else if (value == 25)
+            {
+                Value = value;
+                currentIndex = 4;
             }
         }
 

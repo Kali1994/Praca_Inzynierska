@@ -332,7 +332,7 @@ namespace WindowsFormsApp1
                         int number;
                         if (Int32.TryParse(fileName.Substring(index + 1), out number))
                         {
-                            if (16 >= number && 0 <= number)
+                            if (25 >= number && 0 <= number)
                             {
                                 threadCheckBox.Checked = true;
                                 decryptionThreads = true;
@@ -519,10 +519,15 @@ namespace WindowsFormsApp1
                 piecesI = 3;
                 piecesJ = 3;
             }
-            else
+            else if (pieces == 16)
             {
                 piecesI = 4;
                 piecesJ = 4;
+            }
+            else if (pieces == 25)
+            {
+                piecesI = 5;
+                piecesJ = 5;
             }
         }
     }
