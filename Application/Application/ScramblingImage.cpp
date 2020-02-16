@@ -148,9 +148,9 @@ void ScramblingImage::generateKeys(double& key1, double& key2, int* chessBoard)
 	m_generatorKey.generateKeys(key1, key2, chessBoard);
 }
 
-void ScramblingImage::generatePRBG(double* firstFt, double* secondFt)
+void ScramblingImage::generatePRBG(double firstKey, double secondKey)
 {
-	m_scrambler.generatePRBG(firstFt, secondFt);
+	m_scrambler.generatePRBG(firstKey, secondKey);
 }
 
 void ScramblingImage::computeRulesKMR()
@@ -161,13 +161,6 @@ void ScramblingImage::computeRulesKMR()
 void ScramblingImage::computeRulesRNS()
 {
 	m_scrambler.computeRulesRNS();
-}
-
-double* ScramblingImage::computeChaoticMap(double key, bool controlParam)
-{
-	double controlParameter = controlParam ? m_scrambler.getFirstParamControl() : m_scrambler.getSecondParamControl();
-
-	return m_scrambler.computeChaoticMap(key, controlParameter);
 }
 
 ScramblingImage::~ScramblingImage()

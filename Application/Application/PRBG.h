@@ -7,18 +7,13 @@ class PRBG :public BitOperation
 public:
 	PRBG();
 	~PRBG();
-	
-	double* computeChaoticMap(double, double);
 
 	void computeRulesKMR();
 	void computeRulesRNS();
 	void deallocateRules();
 
-	void generatePRBG(double*, double*);
+	void generatePRBG(double, double);
 	void setNumberGenerateBits(int rows, int columns);
-
-	long double getFirstParamControl();
-	long double getSecondParamControl();
 
 	uint8_t getValueKMR(int, int, int);
 	uint8_t getValueRNS(int, int, int);
@@ -42,6 +37,4 @@ private:
 	long double m_r2;
 
 	int m_numberGenerateBits;
-
-	void initializeBothTable();
 };

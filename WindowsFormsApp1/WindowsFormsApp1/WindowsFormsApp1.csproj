@@ -77,9 +77,9 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AlgorithmWrapper, Version=1.0.7316.41498, Culture=neutral, processorArchitecture=AMD64">
+    <Reference Include="AlgorithmWrapper, Version=1.0.7351.964, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\AlgorithmWrapper\x64\Debug\AlgorithmWrapper.dll</HintPath>
+      <HintPath>..\..\AlgorithmWrapper\x64\Release\AlgorithmWrapper.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

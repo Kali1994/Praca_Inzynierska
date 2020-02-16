@@ -25,6 +25,7 @@ namespace WindowsFormsApp1
         double secondKey;
 
         Stopwatch timer;
+        System.Threading.Timer trhreadTimer;
         int percentage = 0;
         int numberCount;
  
@@ -96,20 +97,7 @@ namespace WindowsFormsApp1
                             bitmap.SetPixel(pixel.tposY, pixel.tposX, third);
                         }
 
-                        mutProgress.WaitOne();
-                        if (timeLabel.InvokeRequired)
-                        {
-                            timeLabel.Invoke(new MethodInvoker(
-                            delegate ()
-                            {
-                                TimeSpan ts = timer.Elapsed;
-                                timeLabel.Text = String.Format("{0:00}:{1:00}:{2:00}",
-                                ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
-                            }));
-                        }
-
                         Progress();
-                        mutProgress.ReleaseMutex();
                     }
 
                     if (VisualisationCheckBox.Checked)
@@ -137,17 +125,6 @@ namespace WindowsFormsApp1
                         AlgorithmWrapper.WrapperPixels pixel = cppClass.threadDescramblingPixels(i, j, k, param.startX, param.endX, param.startY, param.endY);
 
                         mutProgress.WaitOne();
-                        if (timeLabel.InvokeRequired)
-                        {
-                            timeLabel.Invoke(new MethodInvoker(
-                            delegate ()
-                            {
-                                TimeSpan ts = timer.Elapsed;
-                                timeLabel.Text = String.Format("{0:00}:{1:00}:{2:00}",
-                                ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
-                            }));
-                        }
-
                         Progress();
                         mutProgress.ReleaseMutex();
                     }
@@ -157,7 +134,14 @@ namespace WindowsFormsApp1
 
         void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
-            cppClass.preparingRules(firstKey, secondKey);
+            if (threadCheckBox.Checked)
+            {
+                cppClass.threadPreparingRules(firstKey, secondKey);
+            }
+            else
+            {
+                cppClass.preparingRules(firstKey, secondKey);
+            }
 
             if (messageForm.InvokeRequired) {
                 messageForm.Invoke(new MethodInvoker(
@@ -167,9 +151,6 @@ namespace WindowsFormsApp1
             bitmap = new Bitmap(imageLocation);
             percentage = 0;
             numberCount = bitmap.Width * bitmap.Height * 3;
-
-            timer = new Stopwatch();
-            timer.Start();
 
             if (threadCheckBox.Checked)
             {
@@ -231,6 +212,10 @@ namespace WindowsFormsApp1
             }
 
             timer.Stop();
+            if (trhreadTimer != null)
+            {
+                trhreadTimer.Dispose();
+            }
 
             if (saveButton.InvokeRequired)
             {
@@ -282,8 +267,25 @@ namespace WindowsFormsApp1
 
             }
 
+            timer = new Stopwatch();
+            timer.Start();
+            trhreadTimer = new System.Threading.Timer(UpdateTimeView, null, 0, 100);
             messageForm.Show(this);
             backgroundWorker1.RunWorkerAsync();
+        }
+
+        private void UpdateTimeView(object state)
+        {
+            if (timeLabel.InvokeRequired)
+            {
+                timeLabel.Invoke(new MethodInvoker(
+                delegate ()
+                {
+                    TimeSpan ts = timer.Elapsed;
+                    timeLabel.Text = String.Format("{0:00}:{1:00}:{2:00}",
+                    ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
+                }));
+            }
         }
 
         private void loadButton_Click(object sender, EventArgs e)

@@ -35,19 +35,6 @@ uint8_t PRBG::getValueRNS(int i, int j, int k)
 	return m_RNS[i][j][k];
 }
 
-double* PRBG::computeChaoticMap(double key, double controlParam)
-{
-	double* Ft = new double[m_numberGenerateBits];
-
-	for (int i = 0; i < m_numberGenerateBits; i++)
-	{
-		Ft[i] = 2 / M_PI * atan(cos(key * controlParam) / sin(key * controlParam));
-		key = Ft[i];
-	}
-
-	return Ft;
-}
-
 void PRBG::computeRulesKMR()
 {
 	char cByteA[8];
@@ -109,17 +96,7 @@ void PRBG::deallocateRules()
 	}
 }
 
-long double PRBG::getFirstParamControl()
-{
-	return m_r1;
-}
-
-long double PRBG::getSecondParamControl()
-{
-	return m_r2;
-}
-
-void PRBG::generatePRBG(double* firstFt, double* secondFt)
+void PRBG::generatePRBG(double keyFirst, double keySecond)
 {
 	double Ft;
 
@@ -128,7 +105,10 @@ void PRBG::generatePRBG(double* firstFt, double* secondFt)
 
 	for (int i = 0; i < m_numberGenerateBits; i++)
 	{
-		Ft = (firstFt[i] + secondFt[i]) / (1 - firstFt[i] * secondFt[i]);
+		keyFirst = 2 / M_PI * atan(cos(keyFirst * m_r1) / sin(keyFirst * m_r1));
+		keySecond = 2 / M_PI * atan(cos(keySecond * m_r2) / sin(keySecond * m_r2));
+
+		Ft = (keyFirst + keySecond) / (1 - keyFirst * keySecond);
 		Ft = modf(Ft, &Ft);
 		Ft *= 100;
 

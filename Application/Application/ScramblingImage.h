@@ -1,13 +1,5 @@
 #pragma once
 #include "stdafx.h"
-/*
-#include "PRBG.h"
-#include "Picture.h"
-#include "BitOperation.h"
-#include "Extract.h"
-#include "Encryption.h"
-*/
-
 #include "PRBG.h"
 #include "Picture.h"
 #include "KnightTourGenerator.h"
@@ -31,12 +23,10 @@ public:
 
 	void knightTravel(int x, int y, int moves, int chessBoard[][8]);
 	void generateKeys(double&, double&, int* chessBoard);
-	void generatePRBG(double*, double*);
+	void generatePRBG(double, double);
 
 	void computeRulesKMR();
 	void computeRulesRNS();
-
-	double* computeChaoticMap(double, bool);
 
 	~ScramblingImage();
 private:

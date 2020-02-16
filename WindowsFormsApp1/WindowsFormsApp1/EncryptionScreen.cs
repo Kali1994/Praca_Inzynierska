@@ -26,11 +26,11 @@ namespace WindowsFormsApp1
         double secondKey;
 
         Stopwatch timer;
+        System.Threading.Timer trhreadTimer;
         int percentage = 0;
         int numberCount;
 
         private static Mutex mutProgress = new Mutex();
-        private static Mutex mutImage = new Mutex();
 
         public EncryptionScreen()
         {
@@ -101,19 +101,9 @@ namespace WindowsFormsApp1
                             bitmap.SetPixel(pixel.sposY, pixel.sposX, second);
                             bitmap.SetPixel(pixel.tposY, pixel.tposX, third);
                         }
-
-                        if (timeLabel.InvokeRequired)
-                        {
-                            timeLabel.Invoke(new MethodInvoker(
-                            delegate ()
-                            {
-                                TimeSpan ts = timer.Elapsed;
-                                timeLabel.Text = String.Format("{0:00}:{1:00}:{2:00}",
-                                ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
-                            }));
-                        }
-                        Progress();
                     }
+
+                    Progress();
 
                     if (VisualisationCheckBox.Checked)
                     {
@@ -138,29 +128,24 @@ namespace WindowsFormsApp1
                     for (int j = param.startY; j < param.endY; j++)
                     {
                         AlgorithmWrapper.WrapperPixels pixel = cppClass.threadScramblingPixels(i, j, k, param.startX, param.endX, param.startY, param.endY);
-
-                        mutProgress.WaitOne();
-                        if (timeLabel.InvokeRequired)
-                        {
-                            timeLabel.Invoke(new MethodInvoker(
-                            delegate ()
-                            {
-                                TimeSpan ts = timer.Elapsed;
-                                timeLabel.Text = String.Format("{0:00}:{1:00}:{2:00}",
-                                ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
-                            }));
-                        }
-
-                        Progress();
-                        mutProgress.ReleaseMutex();
                     }
+                    mutProgress.WaitOne();
+                    Progress();
+                    mutProgress.ReleaseMutex();
                 }
             }
         }
 
         void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
-            cppClass.preparingRules(firstKey, secondKey);
+            if (threadCheckBox.Checked)
+            {
+                cppClass.threadPreparingRules(firstKey, secondKey);
+            }
+            else
+            {
+                cppClass.preparingRules(firstKey, secondKey);
+            }
 
             if (messageForm.InvokeRequired) {
                 messageForm.Invoke(new MethodInvoker(
@@ -169,10 +154,7 @@ namespace WindowsFormsApp1
 
             bitmap = new Bitmap(imageLocation);
             percentage = 0;
-            numberCount = bitmap.Width * bitmap.Height * 3;
-
-            timer = new Stopwatch();
-            timer.Start();
+            numberCount = bitmap.Height * 3;
 
             if (threadCheckBox.Checked)
             {
@@ -184,6 +166,7 @@ namespace WindowsFormsApp1
 
                 int piecesI = 0, piecesJ = 0;
                 getFromPieces(ref piecesI, ref piecesJ, pieces);
+                numberCount *= piecesJ; 
 
                 int startX = 0, startY = 0;
                 int endX = 0, endY = 0;
@@ -233,8 +216,12 @@ namespace WindowsFormsApp1
                 ScramblingPixels(0, bitmap.Height, 0, bitmap.Width);
             }
                
+            if (trhreadTimer != null)
+            {
+                trhreadTimer.Dispose();
+            }
             timer.Stop();
-
+            
             if (saveButton.InvokeRequired){
                 saveButton.Invoke(new MethodInvoker(
                 delegate (){ saveButton.Enabled = true; }));
@@ -296,9 +283,27 @@ namespace WindowsFormsApp1
                 messageForm = new MessageForm("Preparing rules.  Please Wait");
 
             }
+
+            timer = new Stopwatch();
+            timer.Start();
+            trhreadTimer = new System.Threading.Timer(UpdateTimeView, null, 0, 100);
             messageForm.Show(this);
 
             backgroundWorker1.RunWorkerAsync();
+        }
+
+        private void UpdateTimeView(object state)
+        {
+            if (timeLabel.InvokeRequired)
+            {
+                timeLabel.Invoke(new MethodInvoker(
+                delegate ()
+                {
+                    TimeSpan ts = timer.Elapsed;
+                    timeLabel.Text = String.Format("{0:00}:{1:00}:{2:00}",
+                    ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
+                }));
+            }
         }
 
         private void button2_Click(object sender, EventArgs e)
